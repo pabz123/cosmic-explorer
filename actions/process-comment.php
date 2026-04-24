@@ -24,7 +24,8 @@ if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
 }
 
 $action = $_POST['action'] ?? '';
-$planetName = sanitize($_POST['planet_name'] ?? '');
+$planetName = sanitize($_POST['planet_name'] ?? ''); // Used in redirects and DB writes; keep normalized/safe
+
 $userId = $_SESSION['user_id'];
 
 switch ($action) {
@@ -57,7 +58,8 @@ switch ($action) {
 
     // ===== UPDATE =====
     case 'update':
-        $commentId = intval($_POST['comment_id'] ?? 0);
+        $commentId = intval($_POST['comment_id'] ?? 0); // Cast to int to avoid accidental non-numeric IDs
+
         $content = sanitize($_POST['content'] ?? '');
 
         if (empty($content) || strlen($content) < 3) {
@@ -90,7 +92,7 @@ switch ($action) {
 
     // ===== DELETE =====
     case 'delete':
-        $commentId = intval($_POST['comment_id'] ?? 0);
+        $commentId = intval($_POST['comment_id'] ?? 0); // Cast to int to avoid accidental non-numeric IDs
 
         try {
             // Only allow deleting own comments

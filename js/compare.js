@@ -52,7 +52,7 @@ function initSortableHeaders() {
                 currentSortDir = 'asc';
             }
 
-            // Sort the planets
+            // Sort against a fresh copy so repeated clicks always start from canonical data
             const sorted = [...PLANETS].sort((a, b) => {
                 let valA, valB;
 
@@ -98,10 +98,11 @@ function initSortableHeaders() {
                         valB = b.position;
                 }
 
+                // Numeric columns use arithmetic compare, while text columns return early above
                 return currentSortDir === 'asc' ? valA - valB : valB - valA;
             });
 
-            // Update header styles
+            // Keep sort arrow state in sync with the active column for accessibility/clarity
             headers.forEach(h => {
                 h.classList.remove('sorted');
                 h.querySelector('.sort-arrow').textContent = '↕';
