@@ -1,0 +1,74 @@
+/* ============================================
+   Contact Page
+   ============================================ */
+
+.contact-hero {
+    padding: var(--space-4xl) var(--space-xl) var(--space-2xl);
+    text-align: center;
+}
+
+.contact-hero h1 { margin-bottom: var(--space-md); }
+.contact-hero p {
+    color: var(--color-text-secondary);
+    font-size: var(--fs-md);
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.contact-container {
+    max-width: 650px;
+    margin: 0 auto var(--space-4xl);
+    padding: 0 var(--space-xl);
+}
+
+.contact-form-card {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-2xl);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+}
+
+.form-success {
+    text-align: center;
+    padding: var(--space-3xl);
+    display: none;
+    animation: fadeInUp 0.5s ease;
+}
+
+.form-success.visible {
+    display: block;
+}
+
+.form-success-icon {
+    font-size: 4rem;
+    margin-bottom: var(--space-lg);
+}
+
+.form-success h2 {
+    margin-bottom: var(--space-md);
+}
+
+.form-success p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-xl);
+}
+
+@media (max-width: 480px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-container {
+        padding: 0 var(--space-md);
+    }
+
+    .contact-form-card {
+        padding: var(--space-xl);
+    }
+}
