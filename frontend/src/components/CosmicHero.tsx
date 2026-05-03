@@ -1,11 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { Component, type ReactNode, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Rocket, Orbit, ChevronRight, Activity, Zap, X, Globe, History, Radio, Eye, EyeOff, Stars } from "lucide-react";
 import { PlanetScene } from "@/components/PlanetScene";
 import Navbar from "@/components/Navbar";
 import { PLANETS } from "@/data/planets";
+
+
+class SceneErrorBoundary extends Component<{ children: ReactNode; fallback: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode; fallback: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  override render() {
+    if (this.state.hasError) return this.props.fallback;
+    return this.props.children;
+  }
+}
 
 export default function CosmicHero() {
   const [currentPlanetIndex, setCurrentPlanetIndex] = useState(2);
@@ -35,7 +52,11 @@ export default function CosmicHero() {
               className="absolute inset-0"
             >
               <div className={`absolute inset-0 transition-all duration-[2s] ${isSidebarOpen ? "translate-x-[-20%] scale-90" : "translate-x-[12%] scale-100"}`}>
-                <PlanetScene textureUrl={planet.image} name={planet.name} />
+                <SceneErrorBoundary
+                  fallback={<div className="w-full h-full bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.2),transparent_55%)]" />}
+                >
+                  <PlanetScene textureUrl={planet.image} name={planet.name} />
+                </SceneErrorBoundary>
               </div>
             </motion.div>
           </AnimatePresence>
