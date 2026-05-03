@@ -1,13 +1,13 @@
 "use client";
 
-import { useRef, useState, Suspense, useEffect } from "react";
+import { useRef, useState, Suspense } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
-import { OrbitControls, Html, Stars } from "@react-three/drei";
+import { OrbitControls, Html, PerspectiveCamera, Environment, Stars, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 
 interface PlanetSceneProps {
   textureUrl: string;
-  className?: string;
+  secondTextureUrl?: string;
   infoPoint?: {
     position: [number, number, number];
     title: string;
@@ -15,20 +15,48 @@ interface PlanetSceneProps {
   };
 }
 
-function PlanetSphere({ textureUrl, infoPoint }: Omit<PlanetSceneProps, "className">) {
+function Atmosphere({ color }: { color: string }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  
+  useFrame(({ clock }) => {
+    if (meshRef.current) {
+      meshRef.current.scale.setScalar(1.0 + Math.sin(clock.getElapsedTime() * 0.5) * 0.005);
+    }
+  });
+
+  return (
+    <group>
+      {/* Inner Glow */}
+      <mesh>
+        <sphereGeometry args={[3.05, 64, 64]} />
+        <meshStandardMaterial
+          color={color}
+          transparent
+          opacity={0.3}
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      {/* Outer Atmosphere */}
+      <mesh ref={meshRef}>
+        <sphereGeometry args={[3.2, 64, 64]} />
+        <meshStandardMaterial
+          color={color}
+          transparent
+          opacity={0.1}
+          side={THREE.BackSide}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+function PlanetSphere({ textureUrl, infoPoint }: { textureUrl: string; infoPoint?: PlanetSceneProps["infoPoint"] }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const texture = useLoader(THREE.TextureLoader, textureUrl);
-  const [showInfo, setShowInfo] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Auto-rotate the planet slowly
   useFrame(() => {
     if (meshRef.current) {
       meshRef.current.rotation.y += 0.001;
@@ -36,97 +64,99 @@ function PlanetSphere({ textureUrl, infoPoint }: Omit<PlanetSceneProps, "classNa
   });
 
   return (
-    <group position={[isMobile ? 0 : 2, isMobile ? -1 : 0, 0]}>
-      <mesh ref={meshRef} position={[0, 0, 0]}>
-        <sphereGeometry args={[2.5, 32, 32]} />
+    <group>
+      {/* Core Planet */}
+      <mesh 
+        ref={meshRef} 
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
+      >
+        <sphereGeometry args={[3, 128, 128]} />
         <meshStandardMaterial 
           map={texture} 
-          roughness={0.7}
-          metalness={0.2}
-          bumpMap={texture}
-          bumpScale={0.02}
+          roughness={0.8} 
+          metalness={0.1} 
         />
-        
-        {/* Atmosphere / 3D Glow Layer */}
-        <mesh scale={1.05}>
-          <sphereGeometry args={[2.5, 32, 32]} />
-          <meshPhongMaterial 
-            color="#38bdf8"
-            transparent
-            opacity={0.15}
-            blending={THREE.AdditiveBlending}
-            side={THREE.BackSide}
-            depthWrite={false}
-          />
-        </mesh>
-        
-        {/* Hotspot */}
-        {infoPoint && (
-          <mesh 
-            position={infoPoint.position}
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowInfo(!showInfo);
-            }}
-            onPointerOver={() => {
-              document.body.style.cursor = 'pointer';
-            }}
-            onPointerOut={() => {
-              document.body.style.cursor = 'auto';
-            }}
-          >
-            <sphereGeometry args={[0.08, 16, 16]} />
-            <meshBasicMaterial color="#38bdf8" />
-            <meshBasicMaterial color="#38bdf8" wireframe />
-            
-            {showInfo && (
-              <Html distanceFactor={10} position={[0, 0.2, 0]} center zIndexRange={[100, 0]}>
-                <div className="w-64 p-5 rounded-2xl border border-white/20 bg-black/80 backdrop-blur-xl text-white shadow-2xl pointer-events-none transition-all duration-300">
-                  <h4 className="font-bold text-lg mb-2 text-sky-400">{infoPoint.title}</h4>
-                  <p className="text-sm text-gray-300 leading-relaxed">{infoPoint.description}</p>
+      </mesh>
+
+      {/* Atmospheric Glow */}
+      <Atmosphere color="#4fbfff" />
+
+      {/* Info Hotspot */}
+      {infoPoint && (
+        <group position={infoPoint.position}>
+          <Html distanceFactor={10}>
+            <div className={`flex flex-col items-start gap-2 whitespace-nowrap transition-all duration-500 ${hovered ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}>
+              <div className="flex items-center gap-3 bg-black/60 backdrop-blur-xl border border-white/20 p-4 rounded-2xl shadow-2xl">
+                <div className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
+                <div>
+                  <h3 className="text-white font-black text-xs uppercase tracking-widest mb-1">{infoPoint.title}</h3>
+                  <p className="text-white/60 text-[10px] font-medium max-w-[180px] leading-relaxed whitespace-normal">
+                    {infoPoint.description}
+                  </p>
                 </div>
-              </Html>
-            )}
-          </mesh>
-        )}
+              </div>
+              <div className="w-px h-12 bg-gradient-to-b from-white/40 to-transparent ml-4" />
+            </div>
+          </Html>
+        </group>
+      )}
+    </group>
+  );
+}
+
+function ComparisonScene({ textureUrl, secondTextureUrl }: { textureUrl: string; secondTextureUrl: string }) {
+  const tex1 = useLoader(THREE.TextureLoader, textureUrl);
+  const tex2 = useLoader(THREE.TextureLoader, secondTextureUrl);
+  
+  return (
+    <group>
+      <mesh position={[-3.5, 0, 0]}>
+        <sphereGeometry args={[2.5, 64, 64]} />
+        <meshStandardMaterial map={tex1} />
+      </mesh>
+      <mesh position={[3.5, 0, 0]}>
+        <sphereGeometry args={[2.5, 64, 64]} />
+        <meshStandardMaterial map={tex2} />
       </mesh>
     </group>
   );
 }
 
-function LoadingPlaceholder() {
+export function PlanetScene({ textureUrl, secondTextureUrl, infoPoint }: PlanetSceneProps) {
   return (
-    <Html center>
-      <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white/80 text-sm font-medium tracking-wide">
-        <div className="w-4 h-4 rounded-full border-2 border-sky-400 border-t-transparent animate-spin" />
-        Rendering Universe...
-      </div>
-    </Html>
-  );
-}
-
-export function PlanetScene({ textureUrl, className = "", infoPoint }: PlanetSceneProps) {
-  return (
-    <div className={`w-full h-full absolute inset-0 -z-10 ${className}`}>
-      <Canvas camera={{ position: [0, 0, 7], fov: 45 }}>
-        <ambientLight intensity={0.2} />
-        <directionalLight position={[5, 3, 5]} intensity={2.5} color="#ffffff" />
-        <directionalLight position={[-5, -3, -5]} intensity={0.5} color="#38bdf8" />
-        <Stars radius={150} depth={50} count={1500} factor={4} saturation={0} fade speed={1} />
-        
-        <Suspense fallback={<LoadingPlaceholder />}>
-          <PlanetSphere textureUrl={textureUrl} infoPoint={infoPoint} />
-        </Suspense>
-        
+    <div className="w-full h-full bg-[#020617]">
+      <Canvas shadows dpr={[1, 2]}>
+        <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={45} />
         <OrbitControls 
+          enablePan={false} 
           enableZoom={true} 
-          enablePan={true} 
-          minDistance={3}
+          minDistance={4} 
           maxDistance={15}
           autoRotate={false}
-          enableDamping={true}
-          dampingFactor={0.05}
+          makeDefault
         />
+
+        {/* Lighting Setup */}
+        <ambientLight intensity={0.5} />
+        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2.5} castShadow />
+        <pointLight position={[-10, -10, -10]} intensity={1.5} color="#4fbfff" />
+        <Environment preset="night" />
+
+        {/* Background Elements */}
+        <Stars radius={300} depth={60} count={20000} factor={7} saturation={0} fade speed={1} />
+        
+        {/* Main Content with Suspense */}
+        <Suspense fallback={null}>
+          <group rotation={[0, 0, 0.41]}>
+            {!secondTextureUrl ? (
+              <PlanetSphere textureUrl={textureUrl} infoPoint={infoPoint} />
+            ) : (
+              <ComparisonScene textureUrl={textureUrl} secondTextureUrl={secondTextureUrl} />
+            )}
+          </group>
+          <ContactShadows position={[0, -4.5, 0]} opacity={0.4} scale={20} blur={2.4} far={4.5} />
+        </Suspense>
       </Canvas>
     </div>
   );

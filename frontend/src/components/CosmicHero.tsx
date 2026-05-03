@@ -2,8 +2,12 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Rocket, Orbit, Sparkles, Globe, ArrowRight, ChevronRight, ChevronLeft, Info } from "lucide-react";
+import { Rocket, Orbit, Sparkles, ArrowRight, ChevronRight, ChevronLeft, Info, Eye, EyeOff, Maximize2 } from "lucide-react";
 import { PlanetScene } from "@/components/PlanetScene";
+import Navbar from "@/components/Navbar";
+import CompareOverlay from "@/components/CompareOverlay";
+import QuizOverlay from "@/components/QuizOverlay";
+import APODOverlay from "@/components/APODOverlay";
 import { PLANETS } from "@/data/planets";
 
 const containerVariants = {
@@ -15,29 +19,24 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 30, filter: "blur(6px)" },
+  hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
   visible: {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
-
-const glowPulse = {
-  animate: {
-    boxShadow: [
-      "0 0 20px rgba(56,189,248,0.3)",
-      "0 0 40px rgba(56,189,248,0.6)",
-      "0 0 20px rgba(56,189,248,0.3)",
-    ],
-    transition: { duration: 3, repeat: Infinity, ease: "easeInOut" },
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
 export default function CosmicHero() {
   const [currentPlanetIndex, setCurrentPlanetIndex] = useState(2); // Start at Earth
+  const [isZenMode, setIsZenMode] = useState(false);
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
+  const [isCompareOpen, setIsCompareOpen] = useState(false);
+  const [isAPODOpen, setIsAPODOpen] = useState(false);
+  
   const planet = PLANETS[currentPlanetIndex];
+  const planetColor = planet.color || "#38bdf8";
 
   const handleNext = () => {
     setCurrentPlanetIndex((prev) => (prev + 1) % PLANETS.length);
@@ -48,122 +47,136 @@ export default function CosmicHero() {
   };
 
   const infoPoint = {
-    position: [1.5, 1.2, 1.6] as [number, number, number],
-    title: `${planet.name} Fact`,
-    description: planet.funFacts[0] || "A fascinating world in our solar system.",
+    position: [2.5, 1.5, 2] as [number, number, number],
+    title: `${planet.name} Insight`,
+    description: planet.funFacts[0] || "A mysterious world waiting to be explored.",
   };
 
   return (
-    <section className="relative w-full h-screen overflow-hidden bg-black text-white font-sans">
+    <section className="relative w-full h-screen overflow-hidden bg-[#020617] text-white font-sans selection:bg-sky-500/30">
+      <Navbar 
+        isZenMode={isZenMode} 
+        onQuizClick={() => setIsQuizOpen(true)}
+        onCompareClick={() => setIsCompareOpen(true)}
+        onAPODClick={() => setIsAPODOpen(true)}
+      />
+
       {/* ── 3D Scene Background ── */}
-      <AnimatePresence mode="wait">
-        <motion.div 
-          key={planet.slug}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1 }}
-          className="absolute inset-0 z-0"
-        >
-          <PlanetScene textureUrl={planet.image || "/images/earth.png"} infoPoint={infoPoint} />
-        </motion.div>
-      </AnimatePresence>
-
-      {/* ── Gradient Overlays for better text readability ── */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent z-0 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-0 pointer-events-none" />
-
-      {/* ── Foreground Content ── */}
-      <div className="relative z-10 flex h-full flex-col justify-center px-6 sm:px-10 lg:px-20 pointer-events-none">
-        
-        {/* Left Column Text Overlay */}
-        <motion.div
-          className="w-full max-w-2xl pointer-events-auto"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          key={`content-${planet.slug}`}
-        >
-          {/* Badge */}
-          <motion.div variants={itemVariants} className="mb-6">
-            <span className="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-500/10 px-4 py-1.5 text-sm font-medium text-sky-300 backdrop-blur-md">
-              <Sparkles className="h-4 w-4" />
-              {planet.tagline}
-            </span>
-          </motion.div>
-
-          {/* Headline */}
-          <motion.h1
-            variants={itemVariants}
-            className="mb-4 text-6xl font-bold leading-tight tracking-tighter sm:text-7xl lg:text-8xl"
+      <div className="absolute inset-0 z-0">
+        <AnimatePresence mode="wait">
+          <motion.div 
+            key={planet.slug}
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="absolute inset-0"
           >
-            {planet.name}
-          </motion.h1>
-
-          <motion.div variants={itemVariants} className="mb-8">
-            <span className="bg-gradient-to-r from-sky-400 via-cyan-300 to-teal-300 bg-clip-text text-transparent text-2xl sm:text-3xl font-light tracking-wide">
-              {planet.type}
-            </span>
+            <PlanetScene 
+              textureUrl={planet.image || "/images/earth.png"} 
+              infoPoint={infoPoint} 
+            />
           </motion.div>
-
-          {/* Description */}
-          <motion.p
-            variants={itemVariants}
-            className="mb-10 text-lg leading-relaxed text-gray-300/90 max-w-xl backdrop-blur-sm bg-black/30 p-6 rounded-2xl border border-white/5 shadow-2xl"
-          >
-            {planet.description}
-          </motion.p>
-
-          {/* Action Buttons & Stats */}
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-            <motion.button
-              onClick={() => window.location.href = `/planets.php?planet=${planet.slug}`}
-              className="group relative inline-flex items-center gap-3 rounded-full bg-sky-600 px-8 py-4 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:bg-sky-500 hover:shadow-sky-500/40 active:scale-[0.98]"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              {...glowPulse}
-            >
-              <Rocket className="h-5 w-5 transition-transform duration-300 group-hover:-translate-y-1 group-hover:rotate-12" />
-              Explore Details
-              <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1.5" />
-            </motion.button>
-
-            <div className="flex gap-4">
-              <div className="flex flex-col justify-center px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
-                <span className="text-2xl font-bold text-white flex items-center gap-2">
-                  <Orbit className="h-5 w-5 text-sky-400" />
-                  {planet.moons}
-                </span>
-                <span className="text-xs text-gray-400 uppercase tracking-wider font-semibold">Moons</span>
-              </div>
-              <div className="flex flex-col justify-center px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-md">
-                <span className="text-2xl font-bold text-white flex items-center gap-2">
-                  <Info className="h-5 w-5 text-sky-400" />
-                  {planet.gravity}
-                </span>
-                <span className="text-xs text-gray-400 uppercase tracking-wider font-semibold">Gravity (m/s²)</span>
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
+        </AnimatePresence>
       </div>
 
+      {/* ── Dynamic Atmospheric Overlays ── */}
+      <div className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${isZenMode ? 'opacity-20' : 'opacity-100'}`}>
+        <motion.div 
+          animate={{ background: `radial-gradient(circle at center, ${planetColor}05 0%, rgba(2,6,23,0.8) 100%)` }}
+          className="absolute inset-0 z-0" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 z-0" />
+      </div>
+
+      {/* ── Zen Mode Toggle ── */}
+      <div className="absolute top-24 right-8 z-50 flex flex-col gap-3">
+        <button 
+          onClick={() => setIsZenMode(!isZenMode)}
+          className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/10 transition-all group shadow-2xl"
+        >
+          {isZenMode ? <Eye className="w-6 h-6 text-sky-400" /> : <EyeOff className="w-6 h-6 text-white/60" />}
+        </button>
+      </div>
+
+      {/* ── Foreground Content ── */}
+      <AnimatePresence>
+        {!isZenMode && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="relative z-10 flex h-full flex-col justify-end pb-20 px-10 pointer-events-none"
+          >
+            <motion.div
+              className="w-full max-w-4xl pointer-events-auto"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              key={`content-${planet.slug}`}
+            >
+              <motion.h1
+                variants={itemVariants}
+                className="mb-2 text-8xl font-black leading-[0.85] tracking-tighter sm:text-9xl lg:text-[12rem] drop-shadow-[0_0_50px_rgba(56,189,248,0.2)]"
+              >
+                {planet.name}
+              </motion.h1>
+
+              <motion.p variants={itemVariants} className="text-sky-300/60 text-2xl font-medium tracking-tight mt-4">
+                {planet.tagline}
+              </motion.p>
+
+              <motion.div variants={itemVariants} className="flex gap-8 items-center mt-10">
+                <button
+                  onClick={() => window.location.href = `/planet.php?planet=${planet.slug}`}
+                  style={{ backgroundColor: planetColor }}
+                  className="px-10 py-6 rounded-[2rem] text-lg font-black text-black shadow-2xl hover:scale-105 transition-transform flex items-center gap-4"
+                >
+                  <Rocket className="h-6 w-6" />
+                  Initiate Descent
+                  <ArrowRight className="h-6 w-6" />
+                </button>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Overlays ── */}
+      <AnimatePresence>
+        {isCompareOpen && (
+          <CompareOverlay 
+            currentPlanet={planet} 
+            onSelectPlanet={(p) => {
+              const idx = PLANETS.findIndex(pl => pl.slug === p.slug);
+              setCurrentPlanetIndex(idx);
+              setIsCompareOpen(false);
+            }}
+            onClose={() => {
+              setIsCompareOpen(false);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       {/* ── Navigation Controls ── */}
-      <div className="absolute bottom-10 right-10 z-20 flex gap-4 pointer-events-auto">
-          <button 
-            onClick={handlePrev} 
-            className="p-4 rounded-full bg-black/50 hover:bg-sky-900/60 backdrop-blur-xl border border-white/20 transition-all text-white shadow-2xl hover:scale-110 active:scale-95 group"
-            aria-label="Previous Planet"
-          >
-              <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+      <div className={`absolute bottom-10 right-10 z-20 flex gap-4 transition-transform duration-700 ${isZenMode ? 'translate-y-32' : 'translate-y-0'}`}>
+          <button onClick={handlePrev} className="p-6 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-sky-500 transition-all text-white shadow-2xl">
+              <ChevronLeft className="w-8 h-8" />
           </button>
-          <button 
-            onClick={handleNext} 
-            className="p-4 rounded-full bg-black/50 hover:bg-sky-900/60 backdrop-blur-xl border border-white/20 transition-all text-white shadow-2xl hover:scale-110 active:scale-95 group"
-            aria-label="Next Planet"
-          >
-              <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+          <button onClick={handleNext} className="p-6 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-sky-500 transition-all text-white shadow-2xl">
+              <ChevronRight className="w-8 h-8" />
           </button>
+      </div>
+
+      {/* ── Bottom Progress Bar ── */}
+      <div className="absolute bottom-0 left-0 w-full h-1.5 bg-white/5 z-30">
+        <motion.div 
+          className="h-full"
+          initial={{ width: 0 }}
+          animate={{ width: `${((currentPlanetIndex + 1) / PLANETS.length) * 100}%`, backgroundColor: planetColor }}
+          transition={{ duration: 1, ease: "circOut" }}
+        />
       </div>
     </section>
   );
