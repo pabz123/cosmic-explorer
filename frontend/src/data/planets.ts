@@ -4,7 +4,7 @@ export interface PlanetData {
   type: string;
   tagline: string;
   color: string;
-  image: string | null;
+  image: string;
   position: number;
   diameter: number;
   mass: number;
@@ -17,6 +17,9 @@ export interface PlanetData {
   atmosphere: string;
   description: string;
   funFacts: string[];
+  geology: string;
+  discovery: string;
+  missions: string[];
 }
 
 export const PLANETS: PlanetData[] = [
@@ -26,7 +29,7 @@ export const PLANETS: PlanetData[] = [
       type: "Terrestrial",
       tagline: "The Swift Messenger",
       color: "#8c8c8c",
-      image: "/images/mercury.png",
+      image: "https://solartextures.b-cdn.net/2k_mercury.jpg",
       position: 1,
       diameter: 4879,
       mass: 0.055,
@@ -36,23 +39,20 @@ export const PLANETS: PlanetData[] = [
       moons: 0,
       temperature: { min: -180, max: 430 },
       gravity: 3.7,
-      atmosphere: "Minimal — traces of oxygen, sodium, hydrogen",
-      description: "Mercury is the smallest planet in our solar system and the closest to the Sun. Despite being so close to the Sun, Mercury is not the hottest planet — that title belongs to Venus. Mercury has virtually no atmosphere to retain heat, leading to extreme temperature swings between its scorching days and freezing nights.",
-      funFacts: [
-          "A year on Mercury lasts just 88 Earth days",
-          "Mercury has no moons and no rings",
-          "It has a massive iron core that takes up about 75% of the planet's radius",
-          "Mercury's surface resembles our Moon with many craters",
-          "Despite being closest to the Sun, it's NOT the hottest planet"
-      ]
+      atmosphere: "Thin exosphere of oxygen, sodium, hydrogen, helium, and potassium.",
+      description: "Closest planet to the Sun.",
+      funFacts: ["A year is only 88 days", "No moons"],
+      geology: "Heavily cratered surface, similar to Earth's Moon, with huge ridges called lobate scarps.",
+      discovery: "Known to the ancients; first observed by telescope by Galileo in the early 17th century.",
+      missions: ["Mariner 10", "MESSENGER", "BepiColombo"]
   },
   {
       name: "Venus",
       slug: "venus",
       type: "Terrestrial",
-      tagline: "Earth's Toxic Twin",
+      tagline: "The Veiled Planet",
       color: "#e6c67a",
-      image: "/images/venus.png",
+      image: "https://solartextures.b-cdn.net/2k_venus_atmosphere.jpg",
       position: 2,
       diameter: 12104,
       mass: 0.815,
@@ -62,15 +62,12 @@ export const PLANETS: PlanetData[] = [
       moons: 0,
       temperature: { min: 462, max: 462 },
       gravity: 8.87,
-      atmosphere: "Dense — 96% carbon dioxide, sulfuric acid clouds",
-      description: "Venus is often called Earth's 'sister planet' because of their similar size, but the resemblance ends there. Venus has a thick, toxic atmosphere filled with carbon dioxide and clouds of sulfuric acid. Its extreme greenhouse effect makes it the hottest planet in our solar system, even hotter than Mercury.",
-      funFacts: [
-          "Venus rotates backwards compared to most planets (retrograde rotation)",
-          "A day on Venus is longer than its year",
-          "Surface pressure on Venus is 90 times that of Earth",
-          "Venus is the brightest natural object in the night sky after the Moon",
-          "It rains sulfuric acid on Venus, but it evaporates before reaching the ground"
-      ]
+      atmosphere: "Extremely dense CO2 with clouds of sulfuric acid, creating a runaway greenhouse effect.",
+      description: "Hottest planet in our solar system.",
+      funFacts: ["Rotates backwards", "Thick clouds"],
+      geology: "Vast plains, mountains, and thousands of volcanoes. The surface is relatively young.",
+      discovery: "Brightest object in the sky after the Sun and Moon; known since prehistory.",
+      missions: ["Venera", "Magellan", "Pioneer Venus", "Akatsuki"]
   },
   {
       name: "Earth",
@@ -78,7 +75,7 @@ export const PLANETS: PlanetData[] = [
       type: "Terrestrial",
       tagline: "Our Pale Blue Dot",
       color: "#4fa3e0",
-      image: "/images/earth.png",
+      image: "https://solartextures.b-cdn.net/2k_earth_daymap.jpg",
       position: 3,
       diameter: 12742,
       mass: 1.0,
@@ -88,15 +85,12 @@ export const PLANETS: PlanetData[] = [
       moons: 1,
       temperature: { min: -89, max: 57 },
       gravity: 9.81,
-      atmosphere: "78% nitrogen, 21% oxygen, 1% other gases",
-      description: "Earth is the third planet from the Sun and the only astronomical object known to harbor life. About 71% of Earth's surface is covered with water, mostly by oceans. Earth's atmosphere protects life by absorbing ultraviolet solar radiation, warming the surface through heat retention, and reducing temperature extremes between day and night.",
-      funFacts: [
-          "Earth is the only planet not named after a Greek or Roman god",
-          "Earth's rotation is gradually slowing — days are getting longer",
-          "The deepest point on Earth (Mariana Trench) is 11,034 meters deep",
-          "Earth has a powerful magnetic field generated by its nickel-iron core",
-          "70% of Earth's surface is water, but only 3% is fresh water"
-      ]
+      atmosphere: "Nitrogen (78%), Oxygen (21%), Argon, and Carbon Dioxide.",
+      description: "The only known planet to support life.",
+      funFacts: ["Only planet with liquid water on surface", "Magnetic field protects us"],
+      geology: "Active plate tectonics, diverse ecosystems, and an active core generating a magnetosphere.",
+      discovery: "Home planet.",
+      missions: ["ISS", "Hubble", "JWST", "Landsat"]
   },
   {
       name: "Mars",
@@ -104,7 +98,7 @@ export const PLANETS: PlanetData[] = [
       type: "Terrestrial",
       tagline: "The Red Planet",
       color: "#d45a36",
-      image: "/images/mars.png",
+      image: "https://solartextures.b-cdn.net/2k_mars.jpg",
       position: 4,
       diameter: 6779,
       mass: 0.107,
@@ -114,15 +108,12 @@ export const PLANETS: PlanetData[] = [
       moons: 2,
       temperature: { min: -140, max: 20 },
       gravity: 3.72,
-      atmosphere: "Thin — 95% carbon dioxide, 3% nitrogen",
-      description: "Mars is the fourth planet from the Sun and the second-smallest planet in our solar system. Known as the 'Red Planet' due to iron oxide (rust) on its surface, Mars has been a target for exploration with numerous rovers and spacecraft. It has the tallest mountain (Olympus Mons) and the deepest canyon (Valles Marineris) in the solar system.",
-      funFacts: [
-          "Mars has the tallest volcano in the solar system — Olympus Mons (21.9 km high)",
-          "Mars has two small moons named Phobos and Deimos",
-          "A day on Mars (called a 'sol') is about 37 minutes longer than an Earth day",
-          "Mars has seasons like Earth because of its tilted axis",
-          "NASA's Perseverance rover is currently exploring Mars' Jezero Crater"
-      ]
+      atmosphere: "Thin atmosphere composed primarily of Carbon Dioxide (95%).",
+      description: "A dusty, cold, desert world with a very thin atmosphere.",
+      funFacts: ["Home to Olympus Mons, the tallest volcano", "Has evidence of ancient water"],
+      geology: "Iron oxide dust gives it the red color. Features include polar ice caps and deep canyons.",
+      discovery: "Known to the ancients; named after the Roman god of war.",
+      missions: ["Perseverance", "Curiosity", "Ingenuity", "Mavic", "Insight"]
   },
   {
       name: "Jupiter",
@@ -130,7 +121,7 @@ export const PLANETS: PlanetData[] = [
       type: "Gas Giant",
       tagline: "The King of Planets",
       color: "#c89b6b",
-      image: "/images/jupiter.png",
+      image: "https://solartextures.b-cdn.net/2k_jupiter.jpg",
       position: 5,
       diameter: 139820,
       mass: 317.8,
@@ -140,15 +131,12 @@ export const PLANETS: PlanetData[] = [
       moons: 95,
       temperature: { min: -145, max: -108 },
       gravity: 24.79,
-      atmosphere: "90% hydrogen, 10% helium, traces of methane and ammonia",
-      description: "Jupiter is the largest planet in our solar system — so large that all other planets could fit inside it. This gas giant is made mostly of hydrogen and helium, similar to the Sun. Its most famous feature is the Great Red Spot, a giant storm that has been raging for at least 350 years and is larger than Earth.",
-      funFacts: [
-          "Jupiter has the shortest day of all planets — just 10 hours",
-          "The Great Red Spot is a storm larger than Earth that's lasted 350+ years",
-          "Jupiter has at least 95 known moons, including the four large Galilean moons",
-          "Jupiter's magnetic field is 20,000 times stronger than Earth's",
-          "Jupiter acts as a 'cosmic vacuum cleaner,' deflecting asteroids from hitting Earth"
-      ]
+      atmosphere: "Mostly hydrogen and helium, with swirling clouds of ammonia and water.",
+      description: "Twice as massive as all the other planets combined.",
+      funFacts: ["Great Red Spot is a centuries-old storm", "Strongest magnetic field"],
+      geology: "No solid surface; likely a small rocky core surrounded by metallic hydrogen.",
+      discovery: "Known to the ancients; Galileo discovered its four largest moons in 1610.",
+      missions: ["Juno", "Galileo", "Voyager 1 & 2", "Pioneer 10 & 11"]
   },
   {
       name: "Saturn",
@@ -156,7 +144,7 @@ export const PLANETS: PlanetData[] = [
       type: "Gas Giant",
       tagline: "The Ringed Beauty",
       color: "#e4c76e",
-      image: "/images/saturn.png",
+      image: "https://solartextures.b-cdn.net/2k_saturn.jpg",
       position: 6,
       diameter: 116460,
       mass: 95.2,
@@ -166,15 +154,12 @@ export const PLANETS: PlanetData[] = [
       moons: 146,
       temperature: { min: -178, max: -139 },
       gravity: 10.44,
-      atmosphere: "96% hydrogen, 3% helium, traces of methane and ammonia",
-      description: "Saturn is the sixth planet from the Sun and the second-largest in our solar system. It's best known for its stunning ring system, which is made mostly of ice particles, rocky debris, and dust. Saturn is so light that it would actually float if you could find a body of water big enough — it's less dense than water.",
-      funFacts: [
-          "Saturn's rings span up to 282,000 km but are only about 10 meters thick",
-          "Saturn could float in water — it's the only planet less dense than water",
-          "Saturn has 146 known moons, including Titan which has its own atmosphere",
-          "Winds on Saturn can reach speeds of 1,800 km/h",
-          "Saturn's moon Enceladus shoots geysers of water into space"
-      ]
+      atmosphere: "Hydrogen and helium, with high-speed winds reaching 1,800 km/h.",
+      description: "Adorned with a dazzling, complex system of icy rings.",
+      funFacts: ["Least dense planet", "Hexagonal storm at North Pole"],
+      geology: "A gas giant like Jupiter; its rings are composed of billions of ice and rock particles.",
+      discovery: "Known to the ancients; Huygens first identified the rings in 1655.",
+      missions: ["Cassini-Huygens", "Voyager 1 & 2", "Pioneer 11"]
   },
   {
       name: "Uranus",
@@ -182,7 +167,7 @@ export const PLANETS: PlanetData[] = [
       type: "Ice Giant",
       tagline: "The Tilted World",
       color: "#73d5e8",
-      image: "/images/earth.png", // fallback image as we lack uranus
+      image: "https://solartextures.b-cdn.net/2k_uranus.jpg",
       position: 7,
       diameter: 50724,
       mass: 14.5,
@@ -192,13 +177,12 @@ export const PLANETS: PlanetData[] = [
       moons: 28,
       temperature: { min: -224, max: -197 },
       gravity: 8.87,
-      atmosphere: "83% hydrogen, 15% helium, 2% methane",
-      description: "Uranus is the seventh planet from the Sun and the third-largest in our solar system. What makes it unique is its extreme axial tilt of 98 degrees — it essentially orbits the Sun on its side. The methane in its atmosphere gives it a beautiful blue-green color.",
-      funFacts: [
-          "Uranus rotates on its side with an axial tilt of 98 degrees",
-          "It was the first planet discovered with a telescope",
-          "Uranus has 13 known rings, though they are faint"
-      ]
+      atmosphere: "Hydrogen, helium, and methane, which gives it its blue-green tint.",
+      description: "An ice giant that rotates on its side at nearly a 90-degree angle.",
+      funFacts: ["Rotates on its side", "First planet found with a telescope"],
+      geology: "Mostly made of hot, dense 'icy' materials: water, methane, and ammonia.",
+      discovery: "Discovered by William Herschel in 1781.",
+      missions: ["Voyager 2"]
   },
   {
       name: "Neptune",
@@ -206,7 +190,7 @@ export const PLANETS: PlanetData[] = [
       type: "Ice Giant",
       tagline: "The Windiest World",
       color: "#3f6ccc",
-      image: "/images/earth.png", // fallback image as we lack neptune
+      image: "https://solartextures.b-cdn.net/2k_neptune.jpg",
       position: 8,
       diameter: 49244,
       mass: 17.1,
@@ -216,12 +200,11 @@ export const PLANETS: PlanetData[] = [
       moons: 16,
       temperature: { min: -218, max: -200 },
       gravity: 11.15,
-      atmosphere: "80% hydrogen, 19% helium, 1% methane",
-      description: "Neptune is the eighth and farthest planet from the Sun. This deep blue ice giant was the first planet located through mathematical predictions rather than direct observation. Neptune has the strongest winds of any planet in the solar system.",
-      funFacts: [
-          "Neptune was discovered through mathematics before it was ever seen",
-          "Winds on Neptune can exceed 2,100 km/h",
-          "Neptune has completed only one orbit since its discovery in 1846"
-      ]
+      atmosphere: "Hydrogen, helium, and methane; features extremely fast supersonic winds.",
+      description: "The most distant major planet orbiting our Sun.",
+      funFacts: ["Completed its first orbit since discovery in 2011", "Has a Great Dark Spot"],
+      geology: "Inner structure similar to Uranus; mostly water, methane, and ammonia ice.",
+      discovery: "Discovered by Johann Galle in 1846 using mathematical predictions.",
+      missions: ["Voyager 2"]
   }
 ];
