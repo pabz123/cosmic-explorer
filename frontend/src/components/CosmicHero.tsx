@@ -79,10 +79,8 @@ export default function CosmicHero() {
     });
   }, [currentPlanetIndex]);
 
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/main
+
   return (
     <section className="relative min-h-screen bg-[#000103] text-white font-sans overflow-x-hidden">
       <Navbar
@@ -107,7 +105,7 @@ export default function CosmicHero() {
                 <SceneErrorBoundary
                   fallback={<div className="w-full h-full bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.2),transparent_55%)]" />}
                 >
-                  <PlanetScene textureUrl={planet.image} name={planet.name} normalMapUrl={planet.normalMap} roughnessMapUrl={planet.roughnessMap} />
+                  <PlanetScene textureUrl={planet.image} name={planet.name} />
                 </SceneErrorBoundary>
               </div>
             </motion.div>
@@ -138,10 +136,8 @@ export default function CosmicHero() {
                   <button onClick={handlePrev} className="p-4 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition-all">
                     <span className="text-xl">←</span>
                   </button>
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/main
+
                   <button onClick={handleNext} className="p-4 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition-all">
                     <ChevronRight className="w-6 h-6" />
                   </button>
