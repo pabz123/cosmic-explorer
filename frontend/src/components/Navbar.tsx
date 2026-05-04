@@ -70,6 +70,7 @@ export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODC
           Menu
         </button>
 
+
         <div className="flex items-center gap-4">
           <a href={toLegacyUrl("/login.php")} className="hidden sm:flex px-6 py-3 rounded-xl text-sm font-bold text-white/80 hover:text-white hover:bg-white/5 transition-all border border-white/5">
             Login

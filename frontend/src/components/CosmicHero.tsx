@@ -79,6 +79,7 @@ export default function CosmicHero() {
     });
   }, [currentPlanetIndex]);
 
+
   return (
     <section className="relative min-h-screen bg-[#000103] text-white font-sans overflow-x-hidden">
       <Navbar
@@ -134,6 +135,7 @@ export default function CosmicHero() {
                   <button onClick={handlePrev} className="p-4 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition-all">
                     <span className="text-xl">←</span>
                   </button>
+
                   <button onClick={handleNext} className="p-4 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition-all">
                     <ChevronRight className="w-6 h-6" />
                   </button>
