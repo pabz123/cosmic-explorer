@@ -1,6 +1,6 @@
 "use client";
 
-import { Component, type ReactNode, useState } from "react";
+import { Component, type ReactNode, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Rocket, Orbit, ChevronRight, Activity, Zap, X, Globe, History, Radio, Eye, EyeOff, Stars } from "lucide-react";
 import { PlanetScene } from "@/components/PlanetScene";
@@ -41,6 +41,44 @@ export default function CosmicHero() {
     setCurrentPlanetIndex((prev) => (prev + 1) % PLANETS.length);
     setIsSidebarOpen(false);
   };
+
+  const handlePrev = () => {
+    setCurrentPlanetIndex((prev) => (prev - 1 + PLANETS.length) % PLANETS.length);
+    setIsSidebarOpen(false);
+  };
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowRight") {
+        setCurrentPlanetIndex((prev) => (prev + 1) % PLANETS.length);
+        setIsSidebarOpen(false);
+      }
+      if (event.key === "ArrowLeft") {
+        setCurrentPlanetIndex((prev) => (prev - 1 + PLANETS.length) % PLANETS.length);
+        setIsSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  useEffect(() => {
+    const preloadIndexes = [
+      currentPlanetIndex,
+      (currentPlanetIndex + 1) % PLANETS.length,
+      (currentPlanetIndex - 1 + PLANETS.length) % PLANETS.length,
+    ];
+
+    preloadIndexes.forEach((index) => {
+      const { image, normalMap, roughnessMap } = PLANETS[index];
+      [image, normalMap, roughnessMap].filter(Boolean).forEach((src) => {
+        const img = new Image();
+        img.src = src as string;
+      });
+    });
+  }, [currentPlanetIndex]);
+
 
   return (
     <section className="relative min-h-screen bg-[#000103] text-white font-sans overflow-x-hidden">
@@ -94,6 +132,10 @@ export default function CosmicHero() {
                   <button onClick={() => setIsSidebarOpen(true)} className="group flex items-center gap-3 px-8 py-4 rounded-2xl bg-white text-black font-bold uppercase tracking-wider hover:scale-[1.02] transition-all">
                     <Rocket className="w-5 h-5" /> Technical Readout
                   </button>
+                  <button onClick={handlePrev} className="p-4 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition-all">
+                    <span className="text-xl">←</span>
+                  </button>
+
                   <button onClick={handleNext} className="p-4 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition-all">
                     <ChevronRight className="w-6 h-6" />
                   </button>
@@ -135,6 +177,8 @@ export default function CosmicHero() {
           </div>
         </div>
       </section>
+
+
 
       <section className="relative z-10 px-6 lg:px-20 pb-16 bg-black/40">
         <div className="max-w-6xl mx-auto border border-white/10 rounded-2xl p-6 bg-white/5 text-sm text-white/70">

@@ -78,6 +78,7 @@ function AdvancedPlanet({ textureUrl, name, normalMapUrl, roughnessMapUrl }: { t
   const [normalMap, setNormalMap] = useState<THREE.Texture | null>(null);
   const [roughnessMap, setRoughnessMap] = useState<THREE.Texture | null>(null);
   const isEarth = name.toLowerCase() === "earth";
+  const [cloudMap, setCloudMap] = useState<THREE.Texture | null>(null);
 
   useEffect(() => {
     let disposed = false;
@@ -103,15 +104,32 @@ function AdvancedPlanet({ textureUrl, name, normalMapUrl, roughnessMapUrl }: { t
 
   useEffect(() => {
     if (!normalMapUrl) return;
+    let disposed = false;
     const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(normalMapUrl, (loaded) => setNormalMap(loaded), undefined, () => setNormalMap(null));
+    textureLoader.load(normalMapUrl, (loaded) => { if (!disposed) setNormalMap(loaded); }, undefined, () => { if (!disposed) setNormalMap(null); });
+    return () => { disposed = true; };
   }, [normalMapUrl]);
 
   useEffect(() => {
     if (!roughnessMapUrl) return;
+    let disposed = false;
     const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(roughnessMapUrl, (loaded) => setRoughnessMap(loaded), undefined, () => setRoughnessMap(null));
+    textureLoader.load(roughnessMapUrl, (loaded) => { if (!disposed) setRoughnessMap(loaded); }, undefined, () => { if (!disposed) setRoughnessMap(null); });
+    return () => { disposed = true; };
   }, [roughnessMapUrl]);
+
+  useEffect(() => {
+    if (!isEarth) return;
+    let disposed = false;
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(
+      "https://threejs.org/examples/textures/planets/earth_clouds_1024.png",
+      (loaded) => { if (!disposed) setCloudMap(loaded); },
+      undefined,
+      () => { if (!disposed) setCloudMap(null); },
+    );
+    return () => { disposed = true; };
+  }, [isEarth]);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
@@ -124,6 +142,12 @@ function AdvancedPlanet({ textureUrl, name, normalMapUrl, roughnessMapUrl }: { t
         <sphereGeometry args={[3, 128, 128]} />
         <meshStandardMaterial map={texture ?? undefined} normalMap={normalMap ?? undefined} roughnessMap={roughnessMap ?? undefined} color={texture ? "#ffffff" : "#6ea8ff"} roughness={isEarth ? 0.6 : 0.8} metalness={isEarth ? 0.1 : 0.0} envMapIntensity={0.8} />
       </mesh>
+      {isEarth && cloudMap && (
+        <mesh>
+          <sphereGeometry args={[3.05, 96, 96]} />
+          <meshStandardMaterial map={cloudMap} transparent opacity={0.35} depthWrite={false} />
+        </mesh>
+      )}
 
       {name.toLowerCase() === "saturn" && (
         <Suspense fallback={null}>

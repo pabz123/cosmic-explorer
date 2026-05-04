@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 interface NavbarProps {
   isZenMode?: boolean;
@@ -14,6 +15,7 @@ const LEGACY_BASE_URL = import.meta.env.VITE_LEGACY_BASE_URL ?? "http://localhos
 const toLegacyUrl = (path: string) => `${LEGACY_BASE_URL}${path}`;
 
 export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODClick }: NavbarProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navItems = [
     { name: "Home", href: toLegacyUrl("/index.php") },
     { name: "Planets", href: toLegacyUrl("/planets.php") },
@@ -61,6 +63,14 @@ export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODC
           ))}
         </div>
 
+        <button
+          onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+          className="lg:hidden px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white"
+        >
+          Menu
+        </button>
+
+
         <div className="flex items-center gap-4">
           <a href={toLegacyUrl("/login.php")} className="hidden sm:flex px-6 py-3 rounded-xl text-sm font-bold text-white/80 hover:text-white hover:bg-white/5 transition-all border border-white/5">
             Login
@@ -70,6 +80,29 @@ export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODC
           </a>
         </div>
       </nav>
+      {isMobileMenuOpen && (
+        <div className="lg:hidden mt-4 mx-auto max-w-[1600px] rounded-2xl bg-black/80 border border-white/10 p-3 backdrop-blur-xl pointer-events-auto">
+          <div className="grid grid-cols-2 gap-2">
+            {navItems.map((item) => (
+              <button
+                key={item.name}
+                onClick={(e) => {
+                  setIsMobileMenuOpen(false);
+                  if (item.isAction && item.onClick) {
+                    e.preventDefault();
+                    item.onClick();
+                  } else {
+                    window.location.href = item.href;
+                  }
+                }}
+                className="px-3 py-2 rounded-lg text-xs font-bold text-white/70 hover:text-white hover:bg-white/10 transition-all"
+              >
+                {item.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </motion.header>
   );
 }

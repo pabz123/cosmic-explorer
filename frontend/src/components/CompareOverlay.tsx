@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { PLANETS, PlanetData } from "@/data/planets";
+import { PLANETS, type PlanetData } from "@/data/planets";
 
 interface CompareOverlayProps {
   currentPlanet: PlanetData;
