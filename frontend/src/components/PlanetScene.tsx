@@ -104,60 +104,32 @@ function AdvancedPlanet({ textureUrl, name, normalMapUrl, roughnessMapUrl }: { t
 
   useEffect(() => {
     if (!normalMapUrl) return;
+    let disposed = false;
     const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(normalMapUrl, (loaded) => setNormalMap(loaded), undefined, () => setNormalMap(null));
+    textureLoader.load(normalMapUrl, (loaded) => { if (!disposed) setNormalMap(loaded); }, undefined, () => { if (!disposed) setNormalMap(null); });
+    return () => { disposed = true; };
   }, [normalMapUrl]);
 
   useEffect(() => {
     if (!roughnessMapUrl) return;
+    let disposed = false;
     const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(roughnessMapUrl, (loaded) => setRoughnessMap(loaded), undefined, () => setRoughnessMap(null));
+    textureLoader.load(roughnessMapUrl, (loaded) => { if (!disposed) setRoughnessMap(loaded); }, undefined, () => { if (!disposed) setRoughnessMap(null); });
+    return () => { disposed = true; };
   }, [roughnessMapUrl]);
 
   useEffect(() => {
     if (!isEarth) return;
+    let disposed = false;
     const textureLoader = new THREE.TextureLoader();
     textureLoader.load(
       "https://threejs.org/examples/textures/planets/earth_clouds_1024.png",
-      (loaded) => setCloudMap(loaded),
+      (loaded) => { if (!disposed) setCloudMap(loaded); },
       undefined,
-      () => setCloudMap(null),
+      () => { if (!disposed) setCloudMap(null); },
     );
+    return () => { disposed = true; };
   }, [isEarth]);
-
-  useEffect(() => {
-    let disposed = false;
-    const textureLoader = new THREE.TextureLoader();
-
-    textureLoader.load(
-      textureUrl,
-      (loaded) => {
-        if (disposed) return;
-        loaded.colorSpace = THREE.SRGBColorSpace;
-        setTexture(loaded);
-      },
-      undefined,
-      () => setTexture(null),
-    );
-
-    return () => {
-      disposed = true;
-    };
-  }, [textureUrl]);
-
-
-
-  useEffect(() => {
-    if (!normalMapUrl) return;
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(normalMapUrl, (loaded) => setNormalMap(loaded), undefined, () => setNormalMap(null));
-  }, [normalMapUrl]);
-
-  useEffect(() => {
-    if (!roughnessMapUrl) return;
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(roughnessMapUrl, (loaded) => setRoughnessMap(loaded), undefined, () => setRoughnessMap(null));
-  }, [roughnessMapUrl]);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
