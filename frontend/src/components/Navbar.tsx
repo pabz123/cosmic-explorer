@@ -10,9 +10,15 @@ interface NavbarProps {
   onAPODClick?: () => void;
 }
 
+<<<<<<< HEAD
 const LEGACY_BASE_URL = import.meta.env.VITE_LEGACY_BASE_URL?.trim() ?? "";
 
 const toLegacyUrl = (path: string) => (LEGACY_BASE_URL ? `${LEGACY_BASE_URL}${path}` : path);
+=======
+const LEGACY_BASE_URL = import.meta.env.VITE_LEGACY_BASE_URL ?? "http://localhost/cosmic-explorer";
+
+const toLegacyUrl = (path: string) => `${LEGACY_BASE_URL}${path}`;
+>>>>>>> origin/main
 
 export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODClick }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -70,6 +76,10 @@ export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODC
           Menu
         </button>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
         <div className="flex items-center gap-4">
           <a href={toLegacyUrl("/login.php")} className="hidden sm:flex px-6 py-3 rounded-xl text-sm font-bold text-white/80 hover:text-white hover:bg-white/5 transition-all border border-white/5">
             Login

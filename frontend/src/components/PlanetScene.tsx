@@ -55,7 +55,11 @@ function SaturnRings() {
   useEffect(() => {
     const textureLoader = new THREE.TextureLoader();
     textureLoader.load(
+<<<<<<< HEAD
       "/textures/saturn_ring.png",
+=======
+      "https://solartextures.b-cdn.net/2k_saturn_ring_alpha.png",
+>>>>>>> origin/main
       (loaded) => setRingTexture(loaded),
       undefined,
       () => setRingTexture(null),
@@ -104,18 +108,33 @@ function AdvancedPlanet({ textureUrl, name, normalMapUrl, roughnessMapUrl }: { t
 
   useEffect(() => {
     if (!normalMapUrl) return;
+<<<<<<< HEAD
     const textureLoader = new THREE.TextureLoader();
     textureLoader.load(normalMapUrl, (loaded) => setNormalMap(loaded), undefined, () => setNormalMap(null));
+=======
+    let disposed = false;
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(normalMapUrl, (loaded) => { if (!disposed) setNormalMap(loaded); }, undefined, () => { if (!disposed) setNormalMap(null); });
+    return () => { disposed = true; };
+>>>>>>> origin/main
   }, [normalMapUrl]);
 
   useEffect(() => {
     if (!roughnessMapUrl) return;
+<<<<<<< HEAD
     const textureLoader = new THREE.TextureLoader();
     textureLoader.load(roughnessMapUrl, (loaded) => setRoughnessMap(loaded), undefined, () => setRoughnessMap(null));
+=======
+    let disposed = false;
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(roughnessMapUrl, (loaded) => { if (!disposed) setRoughnessMap(loaded); }, undefined, () => { if (!disposed) setRoughnessMap(null); });
+    return () => { disposed = true; };
+>>>>>>> origin/main
   }, [roughnessMapUrl]);
 
   useEffect(() => {
     if (!isEarth) return;
+<<<<<<< HEAD
     const textureLoader = new THREE.TextureLoader();
     textureLoader.load(
       "/textures/earth_clouds.jpg",
@@ -123,6 +142,17 @@ function AdvancedPlanet({ textureUrl, name, normalMapUrl, roughnessMapUrl }: { t
       undefined,
       () => setCloudMap(null),
     );
+=======
+    let disposed = false;
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(
+      "https://threejs.org/examples/textures/planets/earth_clouds_1024.png",
+      (loaded) => { if (!disposed) setCloudMap(loaded); },
+      undefined,
+      () => { if (!disposed) setCloudMap(null); },
+    );
+    return () => { disposed = true; };
+>>>>>>> origin/main
   }, [isEarth]);
 
   useFrame(({ clock }) => {
