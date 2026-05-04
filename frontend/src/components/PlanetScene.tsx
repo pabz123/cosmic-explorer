@@ -53,17 +53,16 @@ function SaturnRings() {
   const [ringTexture, setRingTexture] = useState<THREE.Texture | null>(null);
 
   useEffect(() => {
+    let disposed = false;
     const textureLoader = new THREE.TextureLoader();
+    // Use the ring downloaded from the script, or fallback
     textureLoader.load(
-<<<<<<< HEAD
       "/textures/saturn_ring.png",
-=======
-      "https://solartextures.b-cdn.net/2k_saturn_ring_alpha.png",
->>>>>>> origin/main
-      (loaded) => setRingTexture(loaded),
+      (loaded) => { if (!disposed) setRingTexture(loaded); },
       undefined,
-      () => setRingTexture(null),
+      () => { if (!disposed) setRingTexture(null); }
     );
+    return () => { disposed = true; };
   }, []);
 
   if (!ringTexture) return null;
@@ -76,13 +75,10 @@ function SaturnRings() {
   );
 }
 
-function AdvancedPlanet({ textureUrl, name, normalMapUrl, roughnessMapUrl }: { textureUrl: string; name: string; normalMapUrl?: string; roughnessMapUrl?: string }) {
+function AdvancedPlanet({ textureUrl, name }: { textureUrl: string; name: string }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
-  const [normalMap, setNormalMap] = useState<THREE.Texture | null>(null);
-  const [roughnessMap, setRoughnessMap] = useState<THREE.Texture | null>(null);
   const isEarth = name.toLowerCase() === "earth";
-  const [cloudMap, setCloudMap] = useState<THREE.Texture | null>(null);
 
   useEffect(() => {
     let disposed = false;
@@ -96,64 +92,13 @@ function AdvancedPlanet({ textureUrl, name, normalMapUrl, roughnessMapUrl }: { t
         setTexture(loaded);
       },
       undefined,
-      () => setTexture(null),
+      () => { if (!disposed) setTexture(null); }
     );
 
     return () => {
       disposed = true;
     };
   }, [textureUrl]);
-
-
-
-  useEffect(() => {
-    if (!normalMapUrl) return;
-<<<<<<< HEAD
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(normalMapUrl, (loaded) => setNormalMap(loaded), undefined, () => setNormalMap(null));
-=======
-    let disposed = false;
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(normalMapUrl, (loaded) => { if (!disposed) setNormalMap(loaded); }, undefined, () => { if (!disposed) setNormalMap(null); });
-    return () => { disposed = true; };
->>>>>>> origin/main
-  }, [normalMapUrl]);
-
-  useEffect(() => {
-    if (!roughnessMapUrl) return;
-<<<<<<< HEAD
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(roughnessMapUrl, (loaded) => setRoughnessMap(loaded), undefined, () => setRoughnessMap(null));
-=======
-    let disposed = false;
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(roughnessMapUrl, (loaded) => { if (!disposed) setRoughnessMap(loaded); }, undefined, () => { if (!disposed) setRoughnessMap(null); });
-    return () => { disposed = true; };
->>>>>>> origin/main
-  }, [roughnessMapUrl]);
-
-  useEffect(() => {
-    if (!isEarth) return;
-<<<<<<< HEAD
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(
-      "/textures/earth_clouds.jpg",
-      (loaded) => setCloudMap(loaded),
-      undefined,
-      () => setCloudMap(null),
-    );
-=======
-    let disposed = false;
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(
-      "https://threejs.org/examples/textures/planets/earth_clouds_1024.png",
-      (loaded) => { if (!disposed) setCloudMap(loaded); },
-      undefined,
-      () => { if (!disposed) setCloudMap(null); },
-    );
-    return () => { disposed = true; };
->>>>>>> origin/main
-  }, [isEarth]);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
@@ -164,14 +109,14 @@ function AdvancedPlanet({ textureUrl, name, normalMapUrl, roughnessMapUrl }: { t
     <group>
       <mesh ref={meshRef} castShadow receiveShadow>
         <sphereGeometry args={[3, 128, 128]} />
-        <meshStandardMaterial map={texture ?? undefined} normalMap={normalMap ?? undefined} roughnessMap={roughnessMap ?? undefined} color={texture ? "#ffffff" : "#6ea8ff"} roughness={isEarth ? 0.6 : 0.8} metalness={isEarth ? 0.1 : 0.0} envMapIntensity={0.8} />
+        <meshStandardMaterial 
+            map={texture ?? undefined} 
+            color={texture ? "#ffffff" : "#6ea8ff"} 
+            roughness={isEarth ? 0.6 : 0.8} 
+            metalness={isEarth ? 0.1 : 0.0} 
+            envMapIntensity={0.8} 
+        />
       </mesh>
-      {isEarth && cloudMap && (
-        <mesh>
-          <sphereGeometry args={[3.05, 96, 96]} />
-          <meshStandardMaterial map={cloudMap} transparent opacity={0.35} depthWrite={false} />
-        </mesh>
-      )}
 
       {name.toLowerCase() === "saturn" && (
         <Suspense fallback={null}>
@@ -184,7 +129,7 @@ function AdvancedPlanet({ textureUrl, name, normalMapUrl, roughnessMapUrl }: { t
   );
 }
 
-export function PlanetScene({ textureUrl, name, normalMapUrl, roughnessMapUrl }: { textureUrl: string; name: string; normalMapUrl?: string; roughnessMapUrl?: string }) {
+export function PlanetScene({ textureUrl, name }: { textureUrl: string; name: string }) {
   return (
     <div className="w-full h-full bg-[#020617]">
       <Canvas shadows dpr={[1, 2]}>
@@ -200,7 +145,7 @@ export function PlanetScene({ textureUrl, name, normalMapUrl, roughnessMapUrl }:
 
         <Suspense fallback={null}>
           <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.2}>
-            <AdvancedPlanet key={name} textureUrl={textureUrl} name={name} normalMapUrl={normalMapUrl} roughnessMapUrl={roughnessMapUrl} />
+            <AdvancedPlanet key={name} textureUrl={textureUrl} name={name} />
           </Float>
           <ContactShadows position={[0, -5, 0]} opacity={0.6} scale={20} blur={3} far={5} />
         </Suspense>

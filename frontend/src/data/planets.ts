@@ -31,11 +31,7 @@ export const PLANETS: PlanetData[] = [
       type: "Terrestrial",
       tagline: "The Swift Messenger",
       color: "#8c8c8c",
-<<<<<<< HEAD
-      image: "/textures/mercury.jpg",
-=======
-      image: "https://threejs.org/examples/textures/planets/mercury.jpg",
->>>>>>> origin/main
+      image: "/images/mercury.png",
       position: 1,
       diameter: 4879,
       mass: 0.055,
@@ -58,11 +54,7 @@ export const PLANETS: PlanetData[] = [
       type: "Terrestrial",
       tagline: "The Veiled Planet",
       color: "#e6c67a",
-<<<<<<< HEAD
-      image: "/textures/venus.jpg",
-=======
-      image: "https://threejs.org/examples/textures/planets/venus.jpg",
->>>>>>> origin/main
+      image: "/images/venus.png",
       position: 2,
       diameter: 12104,
       mass: 0.815,
@@ -85,15 +77,9 @@ export const PLANETS: PlanetData[] = [
       type: "Terrestrial",
       tagline: "Our Pale Blue Dot",
       color: "#4fa3e0",
-<<<<<<< HEAD
-      image: "/textures/earth.jpg",
+      image: "/images/earth.png",
       normalMap: "/textures/earth_normal.jpg",
       roughnessMap: "/textures/earth_specular.jpg",
-=======
-      image: "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg",
-      normalMap: "https://threejs.org/examples/textures/planets/earth_normal_2048.jpg",
-      roughnessMap: "https://threejs.org/examples/textures/planets/earth_specular_2048.jpg",
->>>>>>> origin/main
       position: 3,
       diameter: 12742,
       mass: 1.0,
@@ -116,11 +102,7 @@ export const PLANETS: PlanetData[] = [
       type: "Terrestrial",
       tagline: "The Red Planet",
       color: "#d45a36",
-<<<<<<< HEAD
-      image: "/textures/mars.jpg",
-=======
-      image: "https://threejs.org/examples/textures/planets/mars_1k_color.jpg",
->>>>>>> origin/main
+      image: "/images/mars.png",
       position: 4,
       diameter: 6779,
       mass: 0.107,
@@ -143,11 +125,7 @@ export const PLANETS: PlanetData[] = [
       type: "Gas Giant",
       tagline: "The King of Planets",
       color: "#c89b6b",
-<<<<<<< HEAD
-      image: "/textures/jupiter.jpg",
-=======
-      image: "https://threejs.org/examples/textures/planets/jupiter.jpg",
->>>>>>> origin/main
+      image: "/images/jupiter.png",
       position: 5,
       diameter: 139820,
       mass: 317.8,
@@ -170,11 +148,7 @@ export const PLANETS: PlanetData[] = [
       type: "Gas Giant",
       tagline: "The Ringed Beauty",
       color: "#e4c76e",
-<<<<<<< HEAD
-      image: "/textures/saturn.jpg",
-=======
-      image: "https://threejs.org/examples/textures/planets/saturn.jpg",
->>>>>>> origin/main
+      image: "/images/saturn.png",
       position: 6,
       diameter: 116460,
       mass: 95.2,
@@ -197,11 +171,7 @@ export const PLANETS: PlanetData[] = [
       type: "Ice Giant",
       tagline: "The Tilted World",
       color: "#73d5e8",
-<<<<<<< HEAD
-      image: "/textures/uranus.jpg",
-=======
-      image: "https://threejs.org/examples/textures/planets/uranus.jpg",
->>>>>>> origin/main
+      image: "/images/earth.png",
       position: 7,
       diameter: 50724,
       mass: 14.5,
@@ -224,11 +194,7 @@ export const PLANETS: PlanetData[] = [
       type: "Ice Giant",
       tagline: "The Windiest World",
       color: "#3f6ccc",
-<<<<<<< HEAD
-      image: "/textures/neptune.jpg",
-=======
-      image: "https://threejs.org/examples/textures/planets/neptune.jpg",
->>>>>>> origin/main
+      image: "/images/earth.png",
       position: 8,
       diameter: 49244,
       mass: 17.1,
