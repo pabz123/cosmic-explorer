@@ -4,6 +4,9 @@ import { Component, type ReactNode, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Rocket, Orbit, ChevronRight, Activity, Zap, X, Globe, History, Radio, Eye, EyeOff, Stars } from "lucide-react";
 import { PlanetScene } from "@/components/PlanetScene";
+import CompareOverlay from "@/components/CompareOverlay";
+import QuizOverlay from "@/components/QuizOverlay";
+import APODOverlay from "@/components/APODOverlay";
 import Navbar from "@/components/Navbar";
 import { PLANETS } from "@/data/planets";
 
@@ -28,6 +31,9 @@ export default function CosmicHero() {
   const [currentPlanetIndex, setCurrentPlanetIndex] = useState(2);
   const [isZenMode, setIsZenMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCompareOpen, setIsCompareOpen] = useState(false);
+  const [isQuizOpen, setIsQuizOpen] = useState(false);
+  const [isApodOpen, setIsApodOpen] = useState(false);
 
   const planet = PLANETS[currentPlanetIndex];
 
@@ -38,7 +44,12 @@ export default function CosmicHero() {
 
   return (
     <section className="relative min-h-screen bg-[#000103] text-white font-sans overflow-x-hidden">
-      <Navbar isZenMode={isZenMode} onQuizClick={() => {}} onCompareClick={() => {}} onAPODClick={() => {}} />
+      <Navbar
+        isZenMode={isZenMode}
+        onQuizClick={() => setIsQuizOpen(true)}
+        onCompareClick={() => setIsCompareOpen(true)}
+        onAPODClick={() => setIsApodOpen(true)}
+      />
 
       <div className="relative h-screen overflow-hidden">
         <div className="absolute inset-0 z-0">
@@ -55,7 +66,7 @@ export default function CosmicHero() {
                 <SceneErrorBoundary
                   fallback={<div className="w-full h-full bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.2),transparent_55%)]" />}
                 >
-                  <PlanetScene textureUrl={planet.image} name={planet.name} />
+                  <PlanetScene textureUrl={planet.image} name={planet.name} normalMapUrl={planet.normalMap} roughnessMapUrl={planet.roughnessMap} />
                 </SceneErrorBoundary>
               </div>
             </motion.div>
@@ -124,6 +135,32 @@ export default function CosmicHero() {
           </div>
         </div>
       </section>
+
+      <section className="relative z-10 px-6 lg:px-20 pb-16 bg-black/40">
+        <div className="max-w-6xl mx-auto border border-white/10 rounded-2xl p-6 bg-white/5 text-sm text-white/70">
+          <p className="font-bold text-white mb-2">Texture & Data Credits</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li><a className="text-sky-300 hover:text-sky-200" href="https://threejs.org/examples/#webgl_shaders_ocean" target="_blank" rel="noreferrer">Three.js example planet textures</a></li>
+            <li><a className="text-sky-300 hover:text-sky-200" href="https://www.solarsystemscope.com/textures/" target="_blank" rel="noreferrer">Solar System Scope textures</a></li>
+            <li><a className="text-sky-300 hover:text-sky-200" href="https://svs.gsfc.nasa.gov/2915" target="_blank" rel="noreferrer">NASA Blue Marble references</a></li>
+          </ul>
+        </div>
+      </section>
+
+      {isCompareOpen && (
+        <CompareOverlay
+          currentPlanet={planet}
+          onSelectPlanet={(planetSelection) => {
+            const selectedIndex = PLANETS.findIndex((p) => p.slug === planetSelection.slug);
+            if (selectedIndex >= 0) setCurrentPlanetIndex(selectedIndex);
+            setIsCompareOpen(false);
+          }}
+          onClose={() => setIsCompareOpen(false)}
+        />
+      )}
+
+      {isQuizOpen && <QuizOverlay onClose={() => setIsQuizOpen(false)} />}
+      {isApodOpen && <APODOverlay onClose={() => setIsApodOpen(false)} />}
 
       <AnimatePresence>
         {isSidebarOpen && (
