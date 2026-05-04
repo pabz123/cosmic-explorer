@@ -136,8 +136,6 @@ export default function CosmicHero() {
         </div>
       </section>
 
-
-
       <section className="relative z-10 px-6 lg:px-20 pb-16 bg-black/40">
         <div className="max-w-6xl mx-auto border border-white/10 rounded-2xl p-6 bg-white/5 text-sm text-white/70">
           <p className="font-bold text-white mb-2">Texture & Data Credits</p>
