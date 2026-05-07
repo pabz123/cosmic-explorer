@@ -1,3 +1,10 @@
+import mercuryImg from "@/assets/planets/mercury.png";
+import venusImg from "@/assets/planets/venus.png";
+import earthImg from "@/assets/planets/earth.png";
+import marsImg from "@/assets/planets/mars.png";
+import jupiterImg from "@/assets/planets/jupiter.png";
+import saturnImg from "@/assets/planets/saturn.png";
+
 export interface PlanetData {
   name: string;
   slug: string;
@@ -31,7 +38,7 @@ export const PLANETS: PlanetData[] = [
       type: "Terrestrial",
       tagline: "The Swift Messenger",
       color: "#8c8c8c",
-      image: "/images/mercury.png",
+      image: mercuryImg,
       position: 1,
       diameter: 4879,
       mass: 0.055,
@@ -54,7 +61,7 @@ export const PLANETS: PlanetData[] = [
       type: "Terrestrial",
       tagline: "The Veiled Planet",
       color: "#e6c67a",
-      image: "/images/venus.png",
+      image: venusImg,
       position: 2,
       diameter: 12104,
       mass: 0.815,
@@ -77,7 +84,7 @@ export const PLANETS: PlanetData[] = [
       type: "Terrestrial",
       tagline: "Our Pale Blue Dot",
       color: "#4fa3e0",
-      image: "/images/earth.png",
+      image: earthImg,
       position: 3,
       diameter: 12742,
       mass: 1.0,
@@ -100,7 +107,7 @@ export const PLANETS: PlanetData[] = [
       type: "Terrestrial",
       tagline: "The Red Planet",
       color: "#d45a36",
-      image: "/images/mars.png",
+      image: marsImg,
       position: 4,
       diameter: 6779,
       mass: 0.107,
@@ -123,7 +130,7 @@ export const PLANETS: PlanetData[] = [
       type: "Gas Giant",
       tagline: "The King of Planets",
       color: "#c89b6b",
-      image: "/images/jupiter.png",
+      image: jupiterImg,
       position: 5,
       diameter: 139820,
       mass: 317.8,
@@ -146,7 +153,7 @@ export const PLANETS: PlanetData[] = [
       type: "Gas Giant",
       tagline: "The Ringed Beauty",
       color: "#e4c76e",
-      image: "/images/saturn.png",
+      image: saturnImg,
       position: 6,
       diameter: 116460,
       mass: 95.2,
@@ -169,7 +176,7 @@ export const PLANETS: PlanetData[] = [
       type: "Ice Giant",
       tagline: "The Tilted World",
       color: "#73d5e8",
-      image: "/textures/uranus.jpg",
+      image: saturnImg,
       position: 7,
       diameter: 50724,
       mass: 14.5,
@@ -192,7 +199,7 @@ export const PLANETS: PlanetData[] = [
       type: "Ice Giant",
       tagline: "The Windiest World",
       color: "#3f6ccc",
-      image: "/textures/neptune.jpg",
+      image: jupiterImg,
       position: 8,
       diameter: 49244,
       mass: 17.1,

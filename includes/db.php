@@ -20,8 +20,9 @@ try {
 
     $pdo = new PDO($dsn, null, null, $options);
     
-    // Auto-initialize schema if the file was just created
-    if (filesize($dbFile) === 0) {
+    // Verify if tables exist, if not, initialize
+    $check = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name='users'");
+    if (!$check->fetch()) {
         $schema = file_get_contents(__DIR__ . '/../sql/schema.sql');
         if ($schema) {
             // Remove MySQL specific commands that SQLite doesn't support
@@ -53,4 +54,3 @@ try {
 } catch (PDOException $e) {
     die("Database connection failed: " . $e->getMessage());
 }
-

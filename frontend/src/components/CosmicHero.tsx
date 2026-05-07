@@ -8,6 +8,8 @@ import CompareOverlay from "@/components/CompareOverlay";
 import QuizOverlay from "@/components/QuizOverlay";
 import APODOverlay from "@/components/APODOverlay";
 import Navbar from "@/components/Navbar";
+import PlanetsOverlay from "@/components/PlanetsOverlay";
+import ContactOverlay from "@/components/ContactOverlay";
 import { PLANETS } from "@/data/planets";
 
 
@@ -34,6 +36,8 @@ export default function CosmicHero() {
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [isApodOpen, setIsApodOpen] = useState(false);
+  const [isPlanetsOpen, setIsPlanetsOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
 
   const planet = PLANETS[currentPlanetIndex];
 
@@ -88,6 +92,8 @@ export default function CosmicHero() {
         onQuizClick={() => setIsQuizOpen(true)}
         onCompareClick={() => setIsCompareOpen(true)}
         onAPODClick={() => setIsApodOpen(true)}
+        onPlanetsClick={() => setIsPlanetsOpen(true)}
+        onContactClick={() => setIsContactOpen(true)}
       />
 
       <div className="relative h-screen overflow-hidden">
@@ -207,6 +213,14 @@ export default function CosmicHero() {
 
       {isQuizOpen && <QuizOverlay onClose={() => setIsQuizOpen(false)} />}
       {isApodOpen && <APODOverlay onClose={() => setIsApodOpen(false)} />}
+      {isPlanetsOpen && (
+        <PlanetsOverlay 
+          isOpen={isPlanetsOpen} 
+          onClose={() => setIsPlanetsOpen(false)} 
+          onSelectPlanet={(index) => setCurrentPlanetIndex(index)}
+        />
+      )}
+      {isContactOpen && <ContactOverlay isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />}
 
       <AnimatePresence>
         {isSidebarOpen && (

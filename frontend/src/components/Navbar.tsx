@@ -8,6 +8,8 @@ interface NavbarProps {
   onQuizClick?: () => void;
   onCompareClick?: () => void;
   onAPODClick?: () => void;
+  onPlanetsClick?: () => void;
+  onContactClick?: () => void;
 }
 
 const LEGACY_BASE_URL = import.meta.env.VITE_LEGACY_BASE_URL?.trim() || "";
@@ -15,15 +17,15 @@ const LEGACY_BASE_URL = import.meta.env.VITE_LEGACY_BASE_URL?.trim() || "";
 const toLegacyUrl = (path: string) => (LEGACY_BASE_URL ? `${LEGACY_BASE_URL}${path}` : path);
 
 
-export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODClick }: NavbarProps) {
+export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODClick, onPlanetsClick, onContactClick }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navItems = [
-    { name: "Home", href: toLegacyUrl("/index.php") },
-    { name: "Planets", href: toLegacyUrl("/planets.php") },
+    { name: "Home", href: "#", onClick: () => { window.scrollTo({ top: 0, behavior: "smooth" }); } },
+    { name: "Planets", href: "#", isAction: true, onClick: onPlanetsClick },
     { name: "Compare", href: "#", isAction: true, onClick: onCompareClick },
     { name: "Quiz", href: "#", isAction: true, onClick: onQuizClick },
     { name: "NASA APOD", href: "#", isAction: true, onClick: onAPODClick },
-    { name: "Contact", href: toLegacyUrl("/contact.php") },
+    { name: "Contact", href: "#", isAction: true, onClick: onContactClick },
   ];
 
   return (
