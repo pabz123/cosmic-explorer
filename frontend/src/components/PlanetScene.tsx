@@ -92,7 +92,10 @@ function AdvancedPlanet({ textureUrl, name }: { textureUrl: string; name: string
         setTexture(loaded);
       },
       undefined,
-      () => { if (!disposed) setTexture(null); }
+      (error) => {
+        console.error("Texture loading failed for:", textureUrl, error);
+        if (!disposed) setTexture(null);
+      }
     );
 
     return () => {
@@ -136,9 +139,9 @@ export function PlanetScene({ textureUrl, name }: { textureUrl: string; name: st
         <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={40} />
         <OrbitControls enablePan={false} minDistance={5} maxDistance={20} autoRotate={false} makeDefault />
 
-        <ambientLight intensity={0.2} />
-        <spotLight position={[20, 20, 20]} angle={0.15} penumbra={1} intensity={4} castShadow />
-        <pointLight position={[-15, -15, -10]} intensity={1.5} color="#4fbfff" />
+        <ambientLight intensity={0.6} />
+        <spotLight position={[20, 20, 20]} angle={0.15} penumbra={1} intensity={10} castShadow />
+        <pointLight position={[-15, -15, -10]} intensity={3} color="#4fbfff" />
 
         <Environment preset="night" />
         <Stars radius={400} depth={100} count={50000} factor={10} saturation={0} fade speed={2} />

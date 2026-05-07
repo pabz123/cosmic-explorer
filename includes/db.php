@@ -28,12 +28,17 @@ try {
             $schema = preg_replace('/CREATE DATABASE IF NOT EXISTS \w+;/', '', $schema);
             $schema = preg_replace('/USE \w+;/', '', $schema);
             
-            // SQLite doesn't support AUTO_INCREMENT keyword directly, it uses AUTOINCREMENT
-            $schema = str_replace('AUTO_INCREMENT', 'AUTOINCREMENT', $schema);
-            // Basic translation of MySQL to SQLite schema
-            $schema = preg_replace('/INT\(\d+\)/', 'INTEGER', $schema);
+            // SQLite requires "INTEGER PRIMARY KEY AUTOINCREMENT"
+            // MySQL often uses "INT AUTO_INCREMENT PRIMARY KEY"
+            $schema = preg_replace('/INT AUTO_INCREMENT PRIMARY KEY/i', 'INTEGER PRIMARY KEY AUTOINCREMENT', $schema);
+            $schema = preg_replace('/INT\(\d+\) AUTO_INCREMENT PRIMARY KEY/i', 'INTEGER PRIMARY KEY AUTOINCREMENT', $schema);
+            $schema = preg_replace('/INT PRIMARY KEY AUTO_INCREMENT/i', 'INTEGER PRIMARY KEY AUTOINCREMENT', $schema);
+            
+            // Basic translation of MySQL to SQLite types
+            $schema = preg_replace('/INT\(\d+\)/i', 'INTEGER', $schema);
             $schema = str_replace('VARCHAR(255)', 'TEXT', $schema);
             $schema = str_replace('DATETIME DEFAULT CURRENT_TIMESTAMP', 'DATETIME DEFAULT CURRENT_TIMESTAMP', $schema);
+            $schema = preg_replace('/ON UPDATE CURRENT_TIMESTAMP/i', '', $schema);
             
             // Split and execute multiple queries
             $queries = array_filter(array_map('trim', explode(';', $schema)));
