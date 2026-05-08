@@ -41,6 +41,16 @@ export default function APODOverlay({ onClose }: APODOverlayProps) {
     fetchAPOD();
   }, []);
 
+  const getEmbedUrl = (url: string) => {
+    if (url.includes('youtube.com/watch?v=')) {
+      return url.replace('watch?v=', 'embed/');
+    }
+    if (url.includes('youtu.be/')) {
+      return url.replace('youtu.be/', 'www.youtube.com/embed/');
+    }
+    return url;
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/90 backdrop-blur-xl overflow-y-auto">
       <motion.div 
@@ -70,10 +80,11 @@ export default function APODOverlay({ onClose }: APODOverlayProps) {
           <>
             <div className="lg:w-1/2 relative bg-black flex items-center justify-center p-4">
               {data.media_type === 'video' ? (
-                <div className="relative aspect-video w-full rounded-2xl overflow-hidden shadow-2xl">
+                <div className="relative aspect-video w-full rounded-2xl overflow-hidden shadow-2xl border border-white/5">
                   <iframe 
-                    src={data.url}
+                    src={getEmbedUrl(data.url)}
                     className="absolute inset-0 w-full h-full border-0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
                 </div>

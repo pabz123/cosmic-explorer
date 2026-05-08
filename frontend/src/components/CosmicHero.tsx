@@ -10,6 +10,7 @@ import APODOverlay from "@/components/APODOverlay";
 import Navbar from "@/components/Navbar";
 import PlanetsOverlay from "@/components/PlanetsOverlay";
 import ContactOverlay from "@/components/ContactOverlay";
+import AuthOverlay from "@/components/AuthOverlay";
 import { PLANETS } from "@/data/planets";
 
 
@@ -38,8 +39,26 @@ export default function CosmicHero() {
   const [isApodOpen, setIsApodOpen] = useState(false);
   const [isPlanetsOpen, setIsPlanetsOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [liveFact, setLiveFact] = useState<string | null>(null);
 
   const planet = PLANETS[currentPlanetIndex];
+
+  // Fetch live info from Wikipedia for "Auto-updating" data
+  useEffect(() => {
+    setLiveFact(null);
+    const fetchWiki = async () => {
+      try {
+        const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${planet.name}`);
+        const data = await res.json();
+        if (data.extract) setLiveFact(data.extract);
+      } catch (err) {
+        console.error("Failed to fetch live data", err);
+      }
+    };
+    fetchWiki();
+  }, [planet.name]);
 
   const handleNext = () => {
     setCurrentPlanetIndex((prev) => (prev + 1) % PLANETS.length);
@@ -94,6 +113,8 @@ export default function CosmicHero() {
         onAPODClick={() => setIsApodOpen(true)}
         onPlanetsClick={() => setIsPlanetsOpen(true)}
         onContactClick={() => setIsContactOpen(true)}
+        onLoginClick={() => { setAuthMode("login"); setIsAuthOpen(true); }}
+        onJoinClick={() => { setAuthMode("register"); setIsAuthOpen(true); }}
       />
 
       <div className="relative h-screen overflow-hidden">
@@ -133,7 +154,9 @@ export default function CosmicHero() {
               >
                 <span className="text-[10px] font-black uppercase tracking-[0.5em] text-sky-300">Orbital Experience</span>
                 <h1 className="text-7xl lg:text-[10rem] font-black tracking-tighter leading-[0.85] mt-3 mb-6">{planet.name}</h1>
-                <p className="text-sky-100/80 text-xl lg:text-2xl mb-10 max-w-xl">{planet.tagline}</p>
+                <p className="text-sky-100/80 text-xl lg:text-2xl mb-10 max-w-xl line-clamp-3">
+                  {liveFact || planet.tagline}
+                </p>
 
                 <div className="flex gap-4">
                   <button onClick={() => setIsSidebarOpen(true)} className="group flex items-center gap-3 px-8 py-4 rounded-2xl bg-white text-black font-bold uppercase tracking-wider hover:scale-[1.02] transition-all">
@@ -221,6 +244,11 @@ export default function CosmicHero() {
         />
       )}
       {isContactOpen && <ContactOverlay isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />}
+      <AuthOverlay 
+        isOpen={isAuthOpen} 
+        onClose={() => setIsAuthOpen(false)} 
+        initialMode={authMode} 
+      />
 
       <AnimatePresence>
         {isSidebarOpen && (

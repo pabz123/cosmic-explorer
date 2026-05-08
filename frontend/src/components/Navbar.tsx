@@ -10,6 +10,8 @@ interface NavbarProps {
   onAPODClick?: () => void;
   onPlanetsClick?: () => void;
   onContactClick?: () => void;
+  onLoginClick?: () => void;
+  onJoinClick?: () => void;
 }
 
 const LEGACY_BASE_URL = import.meta.env.VITE_LEGACY_BASE_URL?.trim() || "";
@@ -17,7 +19,7 @@ const LEGACY_BASE_URL = import.meta.env.VITE_LEGACY_BASE_URL?.trim() || "";
 const toLegacyUrl = (path: string) => (LEGACY_BASE_URL ? `${LEGACY_BASE_URL}${path}` : path);
 
 
-export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODClick, onPlanetsClick, onContactClick }: NavbarProps) {
+export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODClick, onPlanetsClick, onContactClick, onLoginClick, onJoinClick }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navItems = [
     { name: "Home", href: "#", onClick: () => { window.scrollTo({ top: 0, behavior: "smooth" }); } },
@@ -76,12 +78,18 @@ export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODC
 
 
         <div className="flex items-center gap-4">
-          <a href={toLegacyUrl("/login.php")} className="hidden sm:flex px-6 py-3 rounded-xl text-sm font-bold text-white/80 hover:text-white hover:bg-white/5 transition-all border border-white/5">
+          <button 
+            onClick={onLoginClick}
+            className="hidden sm:flex px-6 py-3 rounded-xl text-sm font-bold text-white/80 hover:text-white hover:bg-white/5 transition-all border border-white/5"
+          >
             Login
-          </a>
-          <a href={toLegacyUrl("/register.php")} className="px-8 py-3 rounded-xl bg-white text-sm font-black text-black transition-all hover:scale-105 active:scale-95 shadow-2xl">
+          </button>
+          <button 
+            onClick={onJoinClick}
+            className="px-8 py-3 rounded-xl bg-white text-sm font-black text-black transition-all hover:scale-105 active:scale-95 shadow-2xl"
+          >
             Join Mission
-          </a>
+          </button>
         </div>
       </nav>
       {isMobileMenuOpen && (

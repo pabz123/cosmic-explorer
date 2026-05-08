@@ -2,7 +2,7 @@
 
 import { useRef, useMemo, Suspense, useEffect, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, PerspectiveCamera, Environment, Stars, Float, ContactShadows } from "@react-three/drei";
+import { OrbitControls, PerspectiveCamera, Environment, Stars, Float, ContactShadows, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 const AtmosphereShader = {
@@ -76,51 +76,36 @@ function SaturnRings() {
 }
 
 function AdvancedPlanet({ textureUrl, name }: { textureUrl: string; name: string }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const [texture, setTexture] = useState<THREE.Texture | null>(null);
-  const isEarth = name.toLowerCase() === "earth";
-
-  useEffect(() => {
-    let disposed = false;
-    const textureLoader = new THREE.TextureLoader();
-
-    textureLoader.load(
-      textureUrl,
-      (loaded) => {
-        if (disposed) return;
-        loaded.colorSpace = THREE.SRGBColorSpace;
-        setTexture(loaded);
-      },
-      undefined,
-      (error) => {
-        console.error("Texture loading failed for:", textureUrl, error);
-        if (!disposed) setTexture(null);
-      }
-    );
-
-    return () => {
-      disposed = true;
-    };
-  }, [textureUrl]);
-
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    if (meshRef.current) meshRef.current.rotation.y = t * 0.05;
-  });
+  // Use useTexture for more robust loading in React Three Fiber
+  // We handle the case where textureUrl might be a base64 or a hashed path
+  const texture = useTexture(textureUrl);
+  
+  if (texture) {
+    texture.colorSpace = THREE.SRGBColorSpace;
+  }
 
   return (
     <group>
-      <mesh ref={meshRef} castShadow receiveShadow>
-        <sphereGeometry args={[3, 128, 128]} />
-        <meshStandardMaterial 
-            map={texture ?? undefined} 
-            color={texture ? "#ffffff" : "#6ea8ff"} 
-            roughness={isEarth ? 0.6 : 0.8} 
-            metalness={isEarth ? 0.1 : 0.0} 
-            envMapIntensity={0.8} 
+      <mesh castShadow receiveShadow>
+        <sphereGeometry args={[3, 64, 64]} />
+        <meshStandardMaterial
+          map={texture}
+          roughness={0.7}
+          metalness={0.2}
+          emissive={new THREE.Color(0x000000)}
         />
       </mesh>
-
+      {/* Atmosphere glow effect */}
+      <mesh scale={[1.02, 1.02, 1.02]}>
+        <sphereGeometry args={[3, 64, 64]} />
+        <meshStandardMaterial
+          transparent
+          opacity={0.15}
+          color="#4fbfff"
+          side={THREE.BackSide}
+        />
+      </mesh>
+      
       {name.toLowerCase() === "saturn" && (
         <Suspense fallback={null}>
           <SaturnRings />

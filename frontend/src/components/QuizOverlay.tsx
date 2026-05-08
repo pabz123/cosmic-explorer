@@ -1,8 +1,4 @@
-"use client";
-
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { QUIZ_QUESTIONS } from "@/data/quizData";
+import { getRandomQuestions, type Question } from "@/data/questions";
 
 interface QuizOverlayProps {
   onClose: () => void;
@@ -10,12 +6,20 @@ interface QuizOverlayProps {
 
 export default function QuizOverlay({ onClose }: QuizOverlayProps) {
   const [currentStep, setCurrentStep] = useState<'start' | 'quiz' | 'result'>('start');
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
 
-  const currentQuestion = QUIZ_QUESTIONS[currentQuestionIndex];
+  const startQuiz = () => {
+    setQuestions(getRandomQuestions(5)); // Pick 5 random questions
+    setCurrentStep('quiz');
+    setCurrentQuestionIndex(0);
+    setScore(0);
+  };
+
+  const currentQuestion = questions[currentQuestionIndex];
 
   const handleOptionSelect = (index: number) => {
     if (showFeedback) return;
@@ -27,7 +31,7 @@ export default function QuizOverlay({ onClose }: QuizOverlayProps) {
     }
 
     setTimeout(() => {
-      if (currentQuestionIndex < QUIZ_QUESTIONS.length - 1) {
+      if (currentQuestionIndex < questions.length - 1) {
         setCurrentQuestionIndex(prev => prev + 1);
         setSelectedOption(null);
         setShowFeedback(false);
@@ -64,7 +68,7 @@ export default function QuizOverlay({ onClose }: QuizOverlayProps) {
             <h2 className="text-4xl font-black text-white mb-4 tracking-tighter">Cosmic Challenge</h2>
             <p className="text-white/40 font-medium mb-10 max-w-sm mx-auto">Test your knowledge of the solar system.</p>
             <button 
-              onClick={() => setCurrentStep('quiz')}
+              onClick={startQuiz}
               className="px-10 py-5 bg-sky-500 hover:bg-sky-400 text-white rounded-2xl font-black uppercase tracking-widest transition-all shadow-lg"
             >
               Begin Mission
@@ -75,10 +79,10 @@ export default function QuizOverlay({ onClose }: QuizOverlayProps) {
         {currentStep === 'quiz' && (
           <div>
             <div className="flex justify-between items-center mb-12">
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-sky-400">Question {currentQuestionIndex + 1} of {QUIZ_QUESTIONS.length}</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-sky-400">Question {currentQuestionIndex + 1} of {questions.length}</span>
             </div>
 
-            <h3 className="text-3xl font-bold text-white mb-10 leading-tight tracking-tight">{currentQuestion.question}</h3>
+            <h3 className="text-3xl font-bold text-white mb-10 leading-tight tracking-tight">{currentQuestion.text}</h3>
 
             <div className="grid gap-4">
               {currentQuestion.options.map((option, idx) => {
@@ -126,9 +130,9 @@ export default function QuizOverlay({ onClose }: QuizOverlayProps) {
           <div className="text-center py-8">
             <h2 className="text-4xl font-black text-white mb-2 tracking-tighter">Mission Complete</h2>
             <div className="text-7xl font-black text-sky-400 mb-6">
-              {Math.round((score / QUIZ_QUESTIONS.length) * 100)}%
+              {Math.round((score / (questions.length || 1)) * 100)}%
             </div>
-            <p className="text-white/40 font-medium mb-10">You answered {score} out of {QUIZ_QUESTIONS.length} questions correctly.</p>
+            <p className="text-white/40 font-medium mb-10">You answered {score} out of {questions.length} questions correctly.</p>
             <div className="flex gap-4 justify-center">
               <button 
                 onClick={resetQuiz}
