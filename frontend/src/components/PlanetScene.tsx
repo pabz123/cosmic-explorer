@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useMemo, Suspense, useEffect, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { useMemo, Suspense, useEffect, useState } from "react";
+import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Environment, Stars, Float, ContactShadows, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -76,6 +76,7 @@ function SaturnRings() {
 }
 
 function AdvancedPlanet({ textureUrl, name }: { textureUrl: string; name: string }) {
+  const isEarth = name.toLowerCase() === "earth";
   // Use useTexture for more robust loading in React Three Fiber
   // We handle the case where textureUrl might be a base64 or a hashed path
   const texture = useTexture(textureUrl);

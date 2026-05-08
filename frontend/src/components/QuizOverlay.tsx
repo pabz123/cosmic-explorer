@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { getRandomQuestions, type Question } from "@/data/questions";
 
 interface QuizOverlayProps {
@@ -22,17 +26,17 @@ export default function QuizOverlay({ onClose }: QuizOverlayProps) {
   const currentQuestion = questions[currentQuestionIndex];
 
   const handleOptionSelect = (index: number) => {
-    if (showFeedback) return;
+    if (showFeedback || !currentQuestion) return;
     setSelectedOption(index);
     setShowFeedback(true);
     
     if (index === currentQuestion.correct) {
-      setScore(prev => prev + 1);
+      setScore((prev: number) => prev + 1);
     }
 
     setTimeout(() => {
       if (currentQuestionIndex < questions.length - 1) {
-        setCurrentQuestionIndex(prev => prev + 1);
+        setCurrentQuestionIndex((prev: number) => prev + 1);
         setSelectedOption(null);
         setShowFeedback(false);
       } else {
@@ -85,7 +89,7 @@ export default function QuizOverlay({ onClose }: QuizOverlayProps) {
             <h3 className="text-3xl font-bold text-white mb-10 leading-tight tracking-tight">{currentQuestion.text}</h3>
 
             <div className="grid gap-4">
-              {currentQuestion.options.map((option, idx) => {
+              {currentQuestion.options.map((option: string, idx: number) => {
                 const isSelected = selectedOption === idx;
                 const isCorrect = idx === currentQuestion.correct;
                 
