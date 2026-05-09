@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useMemo, Suspense, useEffect, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, PerspectiveCamera, Environment, Stars, Float, ContactShadows } from "@react-three/drei";
+import { useMemo, Suspense, useEffect, useState } from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, PerspectiveCamera, Environment, Stars, Float, ContactShadows, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 const AtmosphereShader = {
@@ -53,13 +53,16 @@ function SaturnRings() {
   const [ringTexture, setRingTexture] = useState<THREE.Texture | null>(null);
 
   useEffect(() => {
+    let disposed = false;
     const textureLoader = new THREE.TextureLoader();
+    // Use the ring downloaded from the script, or fallback
     textureLoader.load(
-      "https://solartextures.b-cdn.net/2k_saturn_ring_alpha.png",
-      (loaded) => setRingTexture(loaded),
+      "/textures/saturn_ring.png",
+      (loaded) => { if (!disposed) setRingTexture(loaded); },
       undefined,
-      () => setRingTexture(null),
+      () => { if (!disposed) setRingTexture(null); }
     );
+    return () => { disposed = true; };
   }, []);
 
   if (!ringTexture) return null;
@@ -72,83 +75,38 @@ function SaturnRings() {
   );
 }
 
-function AdvancedPlanet({ textureUrl, name, normalMapUrl, roughnessMapUrl }: { textureUrl: string; name: string; normalMapUrl?: string; roughnessMapUrl?: string }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const [texture, setTexture] = useState<THREE.Texture | null>(null);
-  const [normalMap, setNormalMap] = useState<THREE.Texture | null>(null);
-  const [roughnessMap, setRoughnessMap] = useState<THREE.Texture | null>(null);
+function AdvancedPlanet({ textureUrl, name }: { textureUrl: string; name: string }) {
   const isEarth = name.toLowerCase() === "earth";
-  const [cloudMap, setCloudMap] = useState<THREE.Texture | null>(null);
-
-  useEffect(() => {
-    let disposed = false;
-    const textureLoader = new THREE.TextureLoader();
-
-    textureLoader.load(
-      textureUrl,
-      (loaded) => {
-        if (disposed) return;
-        loaded.colorSpace = THREE.SRGBColorSpace;
-        setTexture(loaded);
-      },
-      undefined,
-      () => setTexture(null),
-    );
-
-    return () => {
-      disposed = true;
-    };
-  }, [textureUrl]);
-
-
-
-  useEffect(() => {
-    if (!normalMapUrl) return;
-    let disposed = false;
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(normalMapUrl, (loaded) => { if (!disposed) setNormalMap(loaded); }, undefined, () => { if (!disposed) setNormalMap(null); });
-    return () => { disposed = true; };
-  }, [normalMapUrl]);
-
-  useEffect(() => {
-    if (!roughnessMapUrl) return;
-    let disposed = false;
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(roughnessMapUrl, (loaded) => { if (!disposed) setRoughnessMap(loaded); }, undefined, () => { if (!disposed) setRoughnessMap(null); });
-    return () => { disposed = true; };
-  }, [roughnessMapUrl]);
-
-  useEffect(() => {
-    if (!isEarth) return;
-    let disposed = false;
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load(
-      "https://threejs.org/examples/textures/planets/earth_clouds_1024.png",
-      (loaded) => { if (!disposed) setCloudMap(loaded); },
-      undefined,
-      () => { if (!disposed) setCloudMap(null); },
-    );
-    return () => { disposed = true; };
-  }, [isEarth]);
-
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    if (meshRef.current) meshRef.current.rotation.y = t * 0.05;
-  });
+  // Use useTexture for more robust loading in React Three Fiber
+  // We handle the case where textureUrl might be a base64 or a hashed path
+  const texture = useTexture(textureUrl);
+  
+  if (texture) {
+    texture.colorSpace = THREE.SRGBColorSpace;
+  }
 
   return (
     <group>
-      <mesh ref={meshRef} castShadow receiveShadow>
-        <sphereGeometry args={[3, 128, 128]} />
-        <meshStandardMaterial map={texture ?? undefined} normalMap={normalMap ?? undefined} roughnessMap={roughnessMap ?? undefined} color={texture ? "#ffffff" : "#6ea8ff"} roughness={isEarth ? 0.6 : 0.8} metalness={isEarth ? 0.1 : 0.0} envMapIntensity={0.8} />
+      <mesh castShadow receiveShadow>
+        <sphereGeometry args={[3, 64, 64]} />
+        <meshStandardMaterial
+          map={texture}
+          roughness={0.7}
+          metalness={0.2}
+          emissive={new THREE.Color(0x000000)}
+        />
       </mesh>
-      {isEarth && cloudMap && (
-        <mesh>
-          <sphereGeometry args={[3.05, 96, 96]} />
-          <meshStandardMaterial map={cloudMap} transparent opacity={0.35} depthWrite={false} />
-        </mesh>
-      )}
-
+      {/* Atmosphere glow effect */}
+      <mesh scale={[1.02, 1.02, 1.02]}>
+        <sphereGeometry args={[3, 64, 64]} />
+        <meshStandardMaterial
+          transparent
+          opacity={0.15}
+          color="#4fbfff"
+          side={THREE.BackSide}
+        />
+      </mesh>
+      
       {name.toLowerCase() === "saturn" && (
         <Suspense fallback={null}>
           <SaturnRings />
@@ -160,23 +118,23 @@ function AdvancedPlanet({ textureUrl, name, normalMapUrl, roughnessMapUrl }: { t
   );
 }
 
-export function PlanetScene({ textureUrl, name, normalMapUrl, roughnessMapUrl }: { textureUrl: string; name: string; normalMapUrl?: string; roughnessMapUrl?: string }) {
+export function PlanetScene({ textureUrl, name }: { textureUrl: string; name: string }) {
   return (
     <div className="w-full h-full bg-[#020617]">
       <Canvas shadows dpr={[1, 2]}>
         <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={40} />
         <OrbitControls enablePan={false} minDistance={5} maxDistance={20} autoRotate={false} makeDefault />
 
-        <ambientLight intensity={0.2} />
-        <spotLight position={[20, 20, 20]} angle={0.15} penumbra={1} intensity={4} castShadow />
-        <pointLight position={[-15, -15, -10]} intensity={1.5} color="#4fbfff" />
+        <ambientLight intensity={0.6} />
+        <spotLight position={[20, 20, 20]} angle={0.15} penumbra={1} intensity={10} castShadow />
+        <pointLight position={[-15, -15, -10]} intensity={3} color="#4fbfff" />
 
         <Environment preset="night" />
         <Stars radius={400} depth={100} count={50000} factor={10} saturation={0} fade speed={2} />
 
         <Suspense fallback={null}>
           <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.2}>
-            <AdvancedPlanet key={name} textureUrl={textureUrl} name={name} normalMapUrl={normalMapUrl} roughnessMapUrl={roughnessMapUrl} />
+            <AdvancedPlanet key={name} textureUrl={textureUrl} name={name} />
           </Float>
           <ContactShadows position={[0, -5, 0]} opacity={0.6} scale={20} blur={3} far={5} />
         </Suspense>

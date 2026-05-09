@@ -71,3 +71,13 @@ export default defineConfig([
   },
 ])
 ```
+
+## HD planet textures (local assets)
+
+To use high-resolution local planet textures (instead of remote links), run:
+
+```bash
+./scripts/download-hd-textures.sh
+```
+
+This downloads textures into `public/textures/` used by `src/data/planets.ts` and `PlanetScene.tsx`.

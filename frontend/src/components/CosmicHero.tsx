@@ -8,6 +8,9 @@ import CompareOverlay from "@/components/CompareOverlay";
 import QuizOverlay from "@/components/QuizOverlay";
 import APODOverlay from "@/components/APODOverlay";
 import Navbar from "@/components/Navbar";
+import PlanetsOverlay from "@/components/PlanetsOverlay";
+import ContactOverlay from "@/components/ContactOverlay";
+import AuthOverlay from "@/components/AuthOverlay";
 import { PLANETS } from "@/data/planets";
 
 
@@ -34,8 +37,28 @@ export default function CosmicHero() {
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [isApodOpen, setIsApodOpen] = useState(false);
+  const [isPlanetsOpen, setIsPlanetsOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [liveFact, setLiveFact] = useState<string | null>(null);
 
   const planet = PLANETS[currentPlanetIndex];
+
+  // Fetch live info from Wikipedia for "Auto-updating" data
+  useEffect(() => {
+    setLiveFact(null);
+    const fetchWiki = async () => {
+      try {
+        const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${planet.name}`);
+        const data = await res.json();
+        if (data.extract) setLiveFact(data.extract);
+      } catch (err) {
+        console.error("Failed to fetch live data", err);
+      }
+    };
+    fetchWiki();
+  }, [planet.name]);
 
   const handleNext = () => {
     setCurrentPlanetIndex((prev) => (prev + 1) % PLANETS.length);
@@ -80,6 +103,7 @@ export default function CosmicHero() {
   }, [currentPlanetIndex]);
 
 
+
   return (
     <section className="relative min-h-screen bg-[#000103] text-white font-sans overflow-x-hidden">
       <Navbar
@@ -87,6 +111,10 @@ export default function CosmicHero() {
         onQuizClick={() => setIsQuizOpen(true)}
         onCompareClick={() => setIsCompareOpen(true)}
         onAPODClick={() => setIsApodOpen(true)}
+        onPlanetsClick={() => setIsPlanetsOpen(true)}
+        onContactClick={() => setIsContactOpen(true)}
+        onLoginClick={() => { setAuthMode("login"); setIsAuthOpen(true); }}
+        onJoinClick={() => { setAuthMode("register"); setIsAuthOpen(true); }}
       />
 
       <div className="relative h-screen overflow-hidden">
@@ -104,7 +132,7 @@ export default function CosmicHero() {
                 <SceneErrorBoundary
                   fallback={<div className="w-full h-full bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.2),transparent_55%)]" />}
                 >
-                  <PlanetScene textureUrl={planet.image} name={planet.name} normalMapUrl={planet.normalMap} roughnessMapUrl={planet.roughnessMap} />
+                  <PlanetScene textureUrl={planet.image} name={planet.name} />
                 </SceneErrorBoundary>
               </div>
             </motion.div>
@@ -126,7 +154,9 @@ export default function CosmicHero() {
               >
                 <span className="text-[10px] font-black uppercase tracking-[0.5em] text-sky-300">Orbital Experience</span>
                 <h1 className="text-7xl lg:text-[10rem] font-black tracking-tighter leading-[0.85] mt-3 mb-6">{planet.name}</h1>
-                <p className="text-sky-100/80 text-xl lg:text-2xl mb-10 max-w-xl">{planet.tagline}</p>
+                <p className="text-sky-100/80 text-xl lg:text-2xl mb-10 max-w-xl line-clamp-3">
+                  {liveFact || planet.tagline}
+                </p>
 
                 <div className="flex gap-4">
                   <button onClick={() => setIsSidebarOpen(true)} className="group flex items-center gap-3 px-8 py-4 rounded-2xl bg-white text-black font-bold uppercase tracking-wider hover:scale-[1.02] transition-all">
@@ -135,6 +165,7 @@ export default function CosmicHero() {
                   <button onClick={handlePrev} className="p-4 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition-all">
                     <span className="text-xl">←</span>
                   </button>
+
 
                   <button onClick={handleNext} className="p-4 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition-all">
                     <ChevronRight className="w-6 h-6" />
@@ -205,6 +236,19 @@ export default function CosmicHero() {
 
       {isQuizOpen && <QuizOverlay onClose={() => setIsQuizOpen(false)} />}
       {isApodOpen && <APODOverlay onClose={() => setIsApodOpen(false)} />}
+      {isPlanetsOpen && (
+        <PlanetsOverlay 
+          isOpen={isPlanetsOpen} 
+          onClose={() => setIsPlanetsOpen(false)} 
+          onSelectPlanet={(index) => setCurrentPlanetIndex(index)}
+        />
+      )}
+      {isContactOpen && <ContactOverlay isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />}
+      <AuthOverlay 
+        isOpen={isAuthOpen} 
+        onClose={() => setIsAuthOpen(false)} 
+        initialMode={authMode} 
+      />
 
       <AnimatePresence>
         {isSidebarOpen && (

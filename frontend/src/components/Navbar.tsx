@@ -1,28 +1,34 @@
-"use client";
-
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { User, LogOut } from "lucide-react";
 
 interface NavbarProps {
   isZenMode?: boolean;
   onQuizClick?: () => void;
   onCompareClick?: () => void;
   onAPODClick?: () => void;
+  onPlanetsClick?: () => void;
+  onContactClick?: () => void;
+  onLoginClick?: () => void;
+  onJoinClick?: () => void;
 }
 
-const LEGACY_BASE_URL = import.meta.env.VITE_LEGACY_BASE_URL ?? "http://localhost/cosmic-explorer";
+const LEGACY_BASE_URL = import.meta.env.VITE_LEGACY_BASE_URL?.trim() || "";
 
-const toLegacyUrl = (path: string) => `${LEGACY_BASE_URL}${path}`;
+const toLegacyUrl = (path: string) => (LEGACY_BASE_URL ? `${LEGACY_BASE_URL}${path}` : path);
 
-export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODClick }: NavbarProps) {
+
+export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODClick, onPlanetsClick, onContactClick, onLoginClick, onJoinClick }: NavbarProps) {
+  const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navItems = [
-    { name: "Home", href: toLegacyUrl("/index.php") },
-    { name: "Planets", href: toLegacyUrl("/planets.php") },
+    { name: "Home", href: "#", onClick: () => { window.scrollTo({ top: 0, behavior: "smooth" }); } },
+    { name: "Planets", href: "#", isAction: true, onClick: onPlanetsClick },
     { name: "Compare", href: "#", isAction: true, onClick: onCompareClick },
     { name: "Quiz", href: "#", isAction: true, onClick: onQuizClick },
     { name: "NASA APOD", href: "#", isAction: true, onClick: onAPODClick },
-    { name: "Contact", href: toLegacyUrl("/contact.php") },
+    { name: "Contact", href: "#", isAction: true, onClick: onContactClick },
   ];
 
   return (
@@ -71,13 +77,43 @@ export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODC
         </button>
 
 
+
         <div className="flex items-center gap-4">
-          <a href={toLegacyUrl("/login.php")} className="hidden sm:flex px-6 py-3 rounded-xl text-sm font-bold text-white/80 hover:text-white hover:bg-white/5 transition-all border border-white/5">
-            Login
-          </a>
-          <a href={toLegacyUrl("/register.php")} className="px-8 py-3 rounded-xl bg-white text-sm font-black text-black transition-all hover:scale-105 active:scale-95 shadow-2xl">
-            Join Mission
-          </a>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-3 px-4 py-2 rounded-xl bg-sky-500/10 border border-sky-500/20">
+                <div className="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center">
+                  <User className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black text-sky-400 uppercase tracking-widest leading-none mb-1">Astronaut</span>
+                  <span className="text-sm font-bold text-white leading-none">{user.username}</span>
+                </div>
+              </div>
+              <button 
+                onClick={logout}
+                className="p-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all border border-red-500/10"
+                title="Abort Mission (Logout)"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            </div>
+          ) : (
+            <>
+              <button 
+                onClick={onLoginClick}
+                className="hidden sm:flex px-6 py-3 rounded-xl text-sm font-bold text-white/80 hover:text-white hover:bg-white/5 transition-all border border-white/5"
+              >
+                Login
+              </button>
+              <button 
+                onClick={onJoinClick}
+                className="px-8 py-3 rounded-xl bg-white text-sm font-black text-black transition-all hover:scale-105 active:scale-95 shadow-2xl"
+              >
+                Join Mission
+              </button>
+            </>
+          )}
         </div>
       </nav>
       {isMobileMenuOpen && (
