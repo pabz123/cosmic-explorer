@@ -1,7 +1,7 @@
-"use client";
-
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { User, LogOut } from "lucide-react";
 
 interface NavbarProps {
   isZenMode?: boolean;
@@ -20,6 +20,7 @@ const toLegacyUrl = (path: string) => (LEGACY_BASE_URL ? `${LEGACY_BASE_URL}${pa
 
 
 export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODClick, onPlanetsClick, onContactClick, onLoginClick, onJoinClick }: NavbarProps) {
+  const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navItems = [
     { name: "Home", href: "#", onClick: () => { window.scrollTo({ top: 0, behavior: "smooth" }); } },
@@ -78,18 +79,41 @@ export default function Navbar({ isZenMode, onQuizClick, onCompareClick, onAPODC
 
 
         <div className="flex items-center gap-4">
-          <button 
-            onClick={onLoginClick}
-            className="hidden sm:flex px-6 py-3 rounded-xl text-sm font-bold text-white/80 hover:text-white hover:bg-white/5 transition-all border border-white/5"
-          >
-            Login
-          </button>
-          <button 
-            onClick={onJoinClick}
-            className="px-8 py-3 rounded-xl bg-white text-sm font-black text-black transition-all hover:scale-105 active:scale-95 shadow-2xl"
-          >
-            Join Mission
-          </button>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-3 px-4 py-2 rounded-xl bg-sky-500/10 border border-sky-500/20">
+                <div className="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center">
+                  <User className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black text-sky-400 uppercase tracking-widest leading-none mb-1">Astronaut</span>
+                  <span className="text-sm font-bold text-white leading-none">{user.username}</span>
+                </div>
+              </div>
+              <button 
+                onClick={logout}
+                className="p-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all border border-red-500/10"
+                title="Abort Mission (Logout)"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            </div>
+          ) : (
+            <>
+              <button 
+                onClick={onLoginClick}
+                className="hidden sm:flex px-6 py-3 rounded-xl text-sm font-bold text-white/80 hover:text-white hover:bg-white/5 transition-all border border-white/5"
+              >
+                Login
+              </button>
+              <button 
+                onClick={onJoinClick}
+                className="px-8 py-3 rounded-xl bg-white text-sm font-black text-black transition-all hover:scale-105 active:scale-95 shadow-2xl"
+              >
+                Join Mission
+              </button>
+            </>
+          )}
         </div>
       </nav>
       {isMobileMenuOpen && (

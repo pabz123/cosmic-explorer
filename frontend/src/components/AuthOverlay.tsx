@@ -10,8 +10,52 @@ interface AuthOverlayProps {
   initialMode?: "login" | "register";
 }
 
+import { useAuth } from "@/contexts/AuthContext";
+
 export default function AuthOverlay({ isOpen, onClose, initialMode = "login" }: AuthOverlayProps) {
+  const { login } = useAuth();
   const [mode, setMode] = useState<"login" | "register">(initialMode);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
+
+    const formData = new FormData();
+    formData.append("email", email);
+    formData.append("password", password);
+    if (mode === "register") {
+      formData.append("username", username);
+    }
+
+    try {
+      const endpoint = mode === "login" ? "/api/login.php" : "/api/register.php";
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage({ type: "success", text: data.message });
+        login(data.user);
+        setTimeout(() => {
+          onClose();
+        }, 1500);
+      } else {
+        setMessage({ type: "error", text: data.message });
+      }
+    } catch (err) {
+      setMessage({ type: "error", text: "Communication failure with HQ." });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -52,12 +96,27 @@ export default function AuthOverlay({ isOpen, onClose, initialMode = "login" }: 
                 </button>
               </div>
 
-              <div className="space-y-6">
+              {message && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`p-4 rounded-2xl mb-8 text-sm font-bold border ${
+                    message.type === "success" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-red-500/10 border-red-500/20 text-red-400"
+                  }`}
+                >
+                  {message.text}
+                </motion.div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-6">
                 {mode === "register" && (
                   <div className="relative group">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20 group-focus-within:text-sky-400 transition-colors" />
                     <input
                       type="text"
+                      required
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                       placeholder="Astronaut Name"
                       className="w-full pl-12 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-sky-500/50 transition-all"
                     />
@@ -68,6 +127,9 @@ export default function AuthOverlay({ isOpen, onClose, initialMode = "login" }: 
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20 group-focus-within:text-sky-400 transition-colors" />
                   <input
                     type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     placeholder="Mission Email"
                     className="w-full pl-12 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-sky-500/50 transition-all"
                   />
@@ -77,15 +139,21 @@ export default function AuthOverlay({ isOpen, onClose, initialMode = "login" }: 
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/20 group-focus-within:text-sky-400 transition-colors" />
                   <input
                     type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     placeholder="Encryption Key (Password)"
                     className="w-full pl-12 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-white/20 focus:outline-none focus:border-sky-500/50 transition-all"
                   />
                 </div>
 
-                <button className="w-full py-5 rounded-2xl bg-white text-black font-black uppercase tracking-widest transition-all hover:bg-sky-400 hover:text-white active:scale-95 shadow-xl">
-                  {mode === "login" ? "Initiate Login" : "Launch Enrollment"}
+                <button 
+                  disabled={loading}
+                  className="w-full py-5 rounded-2xl bg-white text-black font-black uppercase tracking-widest transition-all hover:bg-sky-400 hover:text-white active:scale-95 shadow-xl disabled:opacity-50"
+                >
+                  {loading ? "Processing..." : (mode === "login" ? "Initiate Login" : "Launch Enrollment")}
                 </button>
-              </div>
+              </form>
 
               <div className="mt-8 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <button
